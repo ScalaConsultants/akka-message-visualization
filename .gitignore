@@ -11,6 +11,7 @@
 project/boot
 target/
 /logs
+/testapp/logs
 .cache
 .classpath
 .project

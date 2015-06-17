@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="monitorLogSTDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>[%-5level] %date{ISO8601} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="monitorLogFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>./logs/monitor.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>logs/monitor.%1.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <minIndex>99</minIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>5MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>[%-5level] %date{ISO8601} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="io.scalac.amv.extension" level="DEBUG">
+    <appender-ref ref="monitorLogSTDOUT" />
+    <appender-ref ref="monitorLogFILE" />
+  </logger>
+</configuration>

@@ -18,5 +18,4 @@ lazy val root = project.in(file("."))
 lazy val logger = project
 
 lazy val testapp = project
-  .enablePlugins(PlayScala)
   .dependsOn(logger)

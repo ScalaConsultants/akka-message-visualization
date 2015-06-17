@@ -5,7 +5,7 @@ import akka.actor.{ActorSystem, ExtendedActorSystem, ExtensionId, ExtensionIdPro
 object MessagingLogger extends ExtensionId[MessagingLoggerImpl] with ExtensionIdProvider {
   override def lookup = MessagingLogger
 
-  override def createExtension(system: ExtendedActorSystem) = new MessagingLoggerImpl
+  override def createExtension(system: ExtendedActorSystem) = new MessagingLoggerImpl(system)
 
   override def get(system: ActorSystem) = super.get(system)
 }

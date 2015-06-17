@@ -8,7 +8,7 @@ trait ActorMonitor { this: Actor =>
   val thisClassName    = this.getClass.getName
   val thisClassHash    = this.hashCode
 
-  def monitorIncoming: Receive = new Receive {
+  lazy val monitorIncoming: Receive = new Receive {
     def isDefinedAt(message: Any) = {
       val messageClass = message.getClass.getName
       val messageHash  = message.hashCode
@@ -20,7 +20,7 @@ trait ActorMonitor { this: Actor =>
       throw new UnsupportedOperationException("`monitorIncoming` should only be used to register incoming message")
   }
 
-  def monitorOutgoing = new WrapperBuilder(thisClassName, thisClassHash, monitorExtension)
+  lazy val monitorOutgoing = new WrapperBuilder(thisClassName, thisClassHash, monitorExtension)
 }
 
 class ActorRefWrapper(redirectedRef: ActorRef) {
@@ -48,6 +48,13 @@ class MonitoringActorRefWrapper(
     messagingLogger: MessagingLoggerImpl)
   extends ActorRefWrapper(redirectedRef) {
 
+  override def !(message: Any)(implicit sender: ActorRef = Actor.noSender) = {
+    val messageClass = message.getClass.getName
+    val messageHash  = message.hashCode
+    messagingLogger.registerOutgoingMessage(senderClassName, senderClassHash, messageClass, messageHash)
+    super.!(message)(sender)
+  }
+
   override def tell(message: Any, sender: ActorRef) = {
     val messageClass = message.getClass.getName
     val messageHash  = message.hashCode
@@ -64,5 +71,7 @@ class MonitoringActorRefWrapper(
 }
 
 class WrapperBuilder(senderClassName: String, senderClassHash: Int, messagingLogger: MessagingLoggerImpl) {
-  def when(actor: ActorRef) = new MonitoringActorRefWrapper(actor, senderClassName, senderClassHash, messagingLogger)
+  def on(actor: ActorRef) = new MonitoringActorRefWrapper(actor, senderClassName, senderClassHash, messagingLogger)
+
+  def ->(actor: ActorRef) = on(actor)
 }
