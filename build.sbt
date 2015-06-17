@@ -13,8 +13,10 @@ ivyScala := ivyScala.value map {
 }
 
 lazy val root = project.in(file("."))
-  .aggregate(testapp)
+  .aggregate(logger, testapp)
+
+lazy val logger = project
 
 lazy val testapp = project
   .enablePlugins(PlayScala)
-  // .dependsOn()
+  .dependsOn(logger)
