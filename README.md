@@ -8,9 +8,32 @@ Simply call:
 
     $ sbt testapp/run
     
-## Usage in code
+## Requirements
 
-First requirement to track messaging with Akka system is usage of `ActorMonitor` trait:
+We need to configure project to make use of our small library. Enable extension in `application.conf`:
+
+    akka {
+      extensions = ["io.scalac.amv.extension.MessagingLogger"]
+    }
+
+and make sure that logging format in `logback.xml` follow the defined pattern:
+
+    <configuration>
+      ...
+      <appender name="SomeName" class=...>
+        <encoder>
+          <pattern>[%-5level] %date{ISO8601} - %msg%n</pattern>
+        </encoder>
+        ...
+      </appender>
+      ...
+      <logger name="io.scalac.amv.extension" level="DEBUG">
+        <appender-ref ref="SomeName" />
+      </logger>
+      ...
+    </configuration>
+
+Next requirement to track messaging with Akka system is usage of `ActorMonitor` trait:
 
     import io.scalac.amv.monitor.ActorMonitor
 
