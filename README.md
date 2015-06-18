@@ -81,7 +81,7 @@ that:
 Alternatively, we can pass configuration via command line and utilize its features to set the absolute path: 
 
     $ cd akka-message-visualization
-    $ gitread -d '' logstash_config <<- CONFIG
+    $ read -d '' logstash_config <<- CONFIG
       # Read all .log files with names staring with "monitor"
       input { file { path => "$PWD/logs/monitor*.log" } }
       
@@ -127,3 +127,9 @@ Result would be JSON objects separated by new lines.
 ## Visualization
 
 Todo: for starter maybe `vis.js` for displaying graph. 
+
+## TODO
+
+ * Log actor's birth and death to know when to start and stop drawing the node on visualization.
+ * Make sure logstash filter out all messages we don't need (so that JSON won't be polluted with broken entities).
+ * Refresh graph page in some intervals or find another way update graph in time.
