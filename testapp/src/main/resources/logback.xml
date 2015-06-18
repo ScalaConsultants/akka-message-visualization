@@ -8,10 +8,9 @@
 
   <appender name="monitorLogFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>./logs/monitor.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>logs/monitor.%1.log</fileNamePattern>
-      <minIndex>1</minIndex>
-      <minIndex>99</minIndex>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>logs/monitor.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
       <maxFileSize>5MB</maxFileSize>
@@ -25,4 +24,6 @@
     <appender-ref ref="monitorLogSTDOUT" />
     <appender-ref ref="monitorLogFILE" />
   </logger>
+
+  <root level="OFF" />
 </configuration>
