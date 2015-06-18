@@ -81,25 +81,25 @@ that:
 Alternatively, we can pass configuration via command line and utilize its features to set the absolute path: 
 
     $ cd akka-message-visualization
-    $ read -d '' logstash_config <<- CONFIG
+    $ gitread -d '' logstash_config <<- CONFIG
       # Read all .log files with names staring with "monitor"
       input { file { path => "$PWD/logs/monitor*.log" } }
       
       # Match log output
       filter {
-        grok {
-          match => [
-            "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg Received: %{NOTSPACE:receiver_class}:%{NUMBER:receiver_hash} <- %{NOTSPACE:message_class}:%{NUMBER:message_hash}",
-            "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg Sent: %{NOTSPACE:sender_class}:%{NUMBER:sender_hash} -> %{NOTSPACE:message_class}:%{NUMBER:message_hash}"
-          ]
-        }
-        mutate {
-          remove_field => ["message","@version","@timestamp","host","path","_grokparsefailure"]
-        }
+        grok { match => [
+          "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg Received: %{NOTSPACE:receiver_class}:%{NUMBER:receiver_hash} <- %{NOTSPACE:message_class}:%{NUMBER:message_hash}",
+          "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg Sent: %{NOTSPACE:sender_class}:%{NUMBER:sender_hash} -> %{NOTSPACE:message_class}:%{NUMBER:message_hash}"
+        ] }
+        mutate { remove_field => ["message","@version","@timestamp","host","path","_grokparsefailure"] }
       }
       
       # Output results
-      output { stdout { codec => json_lines } }
+      output {
+        stdout { codec => json_lines }
+        file   { codec => json_lines
+                 path  => "$PWD/visualize/data.txt" }
+      }
     CONFIG
     $ logstash -e $logstash_config
 
