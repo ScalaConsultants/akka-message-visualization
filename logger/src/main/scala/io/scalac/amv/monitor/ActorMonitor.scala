@@ -3,12 +3,12 @@ package io.scalac.amv.monitor
 import akka.actor._
 import io.scalac.amv.extension.{MessagingLoggerImpl, MessagingLogger}
 
-trait ActorMonitor { this: Actor =>
-  val monitorExtension = context.system.extension(MessagingLogger)
-  val thisClassName    = this.getClass.getName
-  val thisClassHash    = this.hashCode
+trait ActorMonitor extends Actor { this: Actor =>
+  private val monitorExtension = context.system.extension(MessagingLogger)
+  private val thisClassName    = this.getClass.getName
+  private val thisClassHash    = this.hashCode
 
-  lazy val monitorIncoming: Receive = new Receive {
+  protected lazy val monitorIncoming: Receive = new Receive {
     def isDefinedAt(message: Any) = {
       val messageClass = message.getClass.getName
       val messageHash  = message.hashCode
@@ -20,7 +20,17 @@ trait ActorMonitor { this: Actor =>
       throw new UnsupportedOperationException("`monitorIncoming` should only be used to register incoming message")
   }
 
-  lazy val monitorOutgoing = new WrapperBuilder(thisClassName, thisClassHash, monitorExtension)
+  protected lazy val monitorOutgoing = new WrapperBuilder(thisClassName, thisClassHash, monitorExtension)
+
+  override def preStart() = {
+    super.preStart()
+    monitorExtension.registerCreation(thisClassName, thisClassHash)
+  }
+
+  override def postStop() = {
+    super.postStop()
+    monitorExtension.registerStopping(thisClassName, thisClassHash)
+  }
 }
 
 class ActorRefWrapper(redirectedRef: ActorRef) {

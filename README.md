@@ -88,6 +88,8 @@ Alternatively, we can pass configuration via command line and utilize its featur
       # Match log output
       filter {
         grok { match => [
+          "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Created: %{NOTSPACE:created_class}:%{NUMBER:created_hash}",
+          "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Stopped: %{NOTSPACE:stopped_class}:%{NUMBER:stopped_hash}",
           "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg Received: %{NOTSPACE:receiver_class}:%{NUMBER:receiver_hash} <- %{NOTSPACE:message_class}:%{NUMBER:message_hash}",
           "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg Sent: %{NOTSPACE:sender_class}:%{NUMBER:sender_hash} -> %{NOTSPACE:message_class}:%{NUMBER:message_hash}"
         ] }
@@ -108,19 +110,23 @@ changes in `monitor*.log` files. Then we can run our test application in another
 in the background. Hopefully we'll get something like:
  
     Logstash startup completed
-    {"time":"2015-06-18T12:29:07,658Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"425079042","message_class":"io.scalac.amv.testapp.PingActor$Initialize$","message_hash":"-1430411344"}
-    {"time":"2015-06-18T12:29:07,663Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"425079042","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-18T12:29:07,664Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"161412293","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-18T12:29:07,665Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"161412293","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-18T12:29:07,666Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"425079042","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-18T12:29:07,666Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"425079042","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-18T12:29:07,667Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"161412293","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-18T12:29:07,667Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"161412293","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-18T12:29:07,667Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"425079042","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-18T12:29:07,667Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"425079042","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-18T12:29:07,668Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"161412293","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-18T12:29:07,668Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"161412293","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-18T12:29:07,668Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"425079042","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-19T10:58:54,318Z","created_class":"io.scalac.amv.testapp.PingActor","created_hash":"1974990182"}
+    {"time":"2015-06-19T10:58:54,318Z","created_class":"io.scalac.amv.testapp.PongActor","created_hash":"1656124757"}
+    {"time":"2015-06-19T10:58:54,321Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1974990182","message_class":"io.scalac.amv.testapp.PingActor$Initialize$","message_hash":"-1430411344"}
+    {"time":"2015-06-19T10:58:54,329Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1974990182","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-19T10:58:54,329Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"1656124757","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-19T10:58:54,331Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"1656124757","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-19T10:58:54,332Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1974990182","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-19T10:58:54,332Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1974990182","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-19T10:58:54,332Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"1656124757","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-19T10:58:54,332Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"1656124757","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-19T10:58:54,333Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1974990182","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-19T10:58:54,333Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1974990182","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-19T10:58:54,333Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"1656124757","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-19T10:58:54,333Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"1656124757","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-19T10:58:54,333Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1974990182","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-19T10:58:54,342Z","stopped_class":"io.scalac.amv.testapp.PongActor","stopped_hash":"1656124757"}
+    {"time":"2015-06-19T10:58:54,344Z","stopped_class":"io.scalac.amv.testapp.PingActor","stopped_hash":"1974990182"}
 
 Result would be JSON objects separated by new lines.
 
@@ -131,7 +137,7 @@ reading files from disc (e.g. Chrome forbid to read `file://` URLs from local we
 have to run this file through some local server. On Linux easiest approach would be to `cd` into the `visualize/`
 directory and run command:
 
-    $ python -M SimpleHttpServer
+    $ python -m SimpleHTTPServer
     
 It will run simple client allowing you to access content of the folder through `localhost:8000`:
 

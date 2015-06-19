@@ -5,10 +5,15 @@ import akka.event.Logging
 import org.slf4j.LoggerFactory
 
 class MessagingLoggerImpl(system: ExtendedActorSystem) extends Extension {
-  val logger = LoggerFactory.getLogger(MessagingLogger.getClass)
-//  val logger = Logging.getLogger(system, MessagingLogger)
+  private val logger = LoggerFactory.getLogger(MessagingLogger.getClass)
 
   private def log(logMessage: String) = logger.debug(logMessage)
+
+  def registerCreation(createdClass: String, createdHash: Int) =
+    log(s"Created: $createdClass:$createdHash")
+
+  def registerStopping(stoppedClass: String, stoppedHash: Int) =
+    log(s"Stopped: $stoppedClass:$stoppedHash")
 
   def registerIncomingMessage(receiverClass: String, receiverHash: Int, messageClass: String, messageHash: Int) =
     log(s"Msg Received: $receiverClass:$receiverHash <- $messageClass:$messageHash")
