@@ -142,9 +142,3 @@ directory and run command:
 It will run simple client allowing you to access content of the folder through `localhost:8000`:
 
     http://localhost:8000/index.html
-
-## Possible improvements
-
- * Log actor's birth and death to know when to start and stop drawing the node on visualization.
- * Make sure logstash filter out all messages we don't need (so that JSON won't be polluted with broken entities).
- * Refresh graph page in some intervals or find another way update graph in time.
