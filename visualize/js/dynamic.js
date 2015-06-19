@@ -1,5 +1,7 @@
 'use strict';
 
+var animationStepMs = 500;
+
 var timeline;
 
 var container;
@@ -9,7 +11,7 @@ var network;
 
 var actionQueue;
 
-var confirmed;
+var unconfirmed;
 
 function actorCreatedAction(json) {
   return function() {
@@ -20,25 +22,44 @@ function actorCreatedAction(json) {
 }
 
 function messageReceivedAction(json) {
-  return function() {};
+  return function() {
+    var receiver  = createNodeFromJSON(json);
+    var messageId = createMessageId(json);
+
+    // message with the same hash might be sent across several runtimes
+    var alive = data.nodes.getIds();
+    function currentlyAlive(j) { return alive.indexOf(createNodeFromJSON(j).id) >= 0; }
+
+    function sameMessageId(j) { return messageId === createMessageId(j); }
+
+    var json2 = timeline.filter(containsSender).
+                         filter(currentlyAlive).
+                         filter(containsMessage).
+                         filter(sameMessageId)[0];
+    if (json2 != null) {
+      function sameOuterMessageId(obj) { return messageId === obj.outer; }
+      var unconfirmedMessagesOfId = unconfirmed.filter(sameOuterMessageId);
+      if (unconfirmedMessagesOfId[0] != null) {
+        var sender = createNodeFromJSON(json2);
+        console.log(json.time + ": Received message from :" + sender.id + " to: " + receiver.id);
+        var confirmedId = unconfirmedMessagesOfId.shift();
+        // TODO: change arrow to green
+        actionQueue.unshift(function() { data.edges.remove({ id: confirmedId.inner }); });
+      }
+    }
+  };
 }
 
 function messageSentAction(json) {
   return function() {
     var sender    = createNodeFromJSON(json);
-    var messageId = createId(json.message_class, json.message_hash);
+    var messageId = createMessageId(json);
 
     // message with the same hash might be sent across several runtimes
     var alive = data.nodes.getIds();
-    function currentlyAlive(json) {
-      var receiver = createNodeFromJSON(json);
-      return alive.indexOf(receiver.id) >= 0;
-    }
+    function currentlyAlive(j) { return alive.indexOf(createNodeFromJSON(j).id) >= 0; }
 
-    function sameMessageId(json2) {
-      var messageId2 = createId(json2.message_class, json2.message_hash);
-      return messageId === messageId2;
-    }
+    function sameMessageId(j) { return messageId === createMessageId(j); }
 
     var json2 = timeline.filter(containsReceiver).
                          filter(currentlyAlive).
@@ -47,12 +68,13 @@ function messageSentAction(json) {
     if (json2 != null) {
       var receiver = createNodeFromJSON(json2);
       console.log(json.time + ": Sending message from :" + sender.id + " to: " + receiver.id);
-      data.edges.add({
+      var innerId = data.edges.add({
         from:  sender.id,
         to:    receiver.id,
-        label: json.message_class,
+        label: messageId,
         color: 'red'
       });
+      unconfirmed.push({ inner: innerId[0], outer: messageId });
     }
   };
 }
@@ -86,6 +108,7 @@ function initiateGraph() {
     }
   };
   network   = new vis.Network(container, data, options);
+  unconfirmed = [];
 }
 
 function prepareData(data) {
@@ -101,11 +124,11 @@ function runEnqueuedAction() {
       console.error(e);
     }
   if (actionQueue[0] != null)
-    setTimeout(runEnqueuedAction, 1000);
+    setTimeout(runEnqueuedAction, animationStepMs);
 }
 
 function drawGraph(jsonData) {
   initiateGraph();
   actionQueue = prepareData(jsonData);
-  runEnqueuedAction()
+  runEnqueuedAction();
 }

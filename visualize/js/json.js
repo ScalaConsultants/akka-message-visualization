@@ -41,6 +41,8 @@ function createId(clas, hash) { return clas + '(' + hash + ')'; }
 
 function createLabel(clas, hash) { return clas; }
 
+function createMessageId(json) { return createId(json.message_class, json.message_hash); }
+
 function createNodeFromJSON(json) {
   var clas = null;
   var hash = null;
