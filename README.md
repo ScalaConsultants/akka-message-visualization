@@ -126,9 +126,18 @@ Result would be JSON objects separated by new lines.
 
 ## Visualization
 
-Todo: for starter maybe `vis.js` for displaying graph. 
+To visualize data in the form of graph open file `visualize/index.html`. Due to some browser's policy concerning
+reading files from disc (e.g. Chrome forbid to read `file://` URLs from local websites to improve security) you might
+have to run this file through some local server. On Linux easiest approach would be to `cd` into the `visualize/`
+directory and run command:
 
-## TODO
+    $ python -M SimpleHttpServer
+    
+It will run simple client allowing you to access content of the folder through `localhost:8000`:
+
+    http://localhost:8000/index.html
+
+## Possible improvements
 
  * Log actor's birth and death to know when to start and stop drawing the node on visualization.
  * Make sure logstash filter out all messages we don't need (so that JSON won't be polluted with broken entities).

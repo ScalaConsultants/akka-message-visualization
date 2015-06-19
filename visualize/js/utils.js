@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 function idUniquenessFilter(value, index, self) {
   function sameIds(checked) { return value.id === checked.id; }

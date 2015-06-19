@@ -1,15 +1,31 @@
-"use strict";
+'use strict';
+
+var messageClassField  = 'message_class';
+var messageHashField   = 'message_hash';
+var receiverClassField = 'receiver_class';
+var receiverHashField  = 'receiver_hash';
+var senderClassField   = 'sender_class';
+var senderHashField    = 'sender_hash';
+var graphElementDOMId  = 'messages-graph';
+
+var defaultOptions = {
+  edges: {
+    arrows: {
+      to: true
+    }
+  }
+};
 
 function containsMessage(json) {
-  return json.hasOwnProperty('message_class') && json.hasOwnProperty('message_hash');
+  return json.hasOwnProperty(messageClassField) && json.hasOwnProperty(messageHashField);
 }
 
 function containsReceiver(json) {
-  return json.hasOwnProperty('receiver_class') && json.hasOwnProperty('receiver_hash');
+  return json.hasOwnProperty(receiverClassField) && json.hasOwnProperty(receiverHashField);
 }
 
 function containsSender(json) {
-  return json.hasOwnProperty('sender_class') && json.hasOwnProperty('sender_hash');
+  return json.hasOwnProperty(senderClassField) && json.hasOwnProperty(senderHashField);
 }
 
 function createNodeFromJSON(json) {
@@ -33,7 +49,6 @@ function prepareData(data) {
   var nodes_data = data.map(createNodeFromJSON).filter(idUniquenessFilter);
   var edges_data = [];
 
-  // remove error
   var messageTransfer = data.filter(containsMessage);
   var sendingList     = messageTransfer.filter(containsSender);
   var receivingList   = messageTransfer.filter(containsReceiver);
@@ -49,7 +64,7 @@ function prepareData(data) {
       var receivedMessageId = receiving.message_class + '(' + receiving.message_hash + ')';
 
       if (sentMessageId === receivedMessageId)
-        edges_data.push({from: sender.id, to: receiver.id});
+        edges_data.push({ from: sender.id, to: receiver.id, label: receiving.message_class });
     }
   }
 
@@ -58,8 +73,8 @@ function prepareData(data) {
 }
 
 function drawGraph(jsonData) {
-  var container = document.getElementById('messages-graph');
+  var container = document.getElementById(graphElementDOMId);
   var data      = prepareData(jsonData);
-  var options   = {};
+  var options   = defaultOptions;
   var network   = new vis.Network(container, data, options);
 }

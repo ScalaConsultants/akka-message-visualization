@@ -1,4 +1,7 @@
-"use strict";
+'use strict';
+
+var inputFile    = './data.txt';
+var errorMessage = 'Failed to read "data.txt"';
 
 function readDataFile(callback) {
   function requestSuccessful(req) {
@@ -7,13 +10,13 @@ function readDataFile(callback) {
   }
 
   var rawData = new XMLHttpRequest();
-  rawData.open("GET", "./data.txt", true);
+  rawData.open('GET', inputFile, true);
   rawData.onload = function () {
     if (requestSuccessful(rawData))
       callback(rawData.responseText);
   }
   rawData.onerror = function(error) {
-    alert("Failed to read 'data.txt'")
+    alert(errorMessage)
   }
   rawData.send(null);
 }
