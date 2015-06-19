@@ -37,8 +37,12 @@ function messageReceivedAction(json) {
                          filter(containsMessage).
                          filter(sameMessageId)[0];
     if (json2 != null) {
+      var currentIds = data.edges.getIds();
+      function currentlyUsed(obj) { return currentIds.indexOf(obj.inner) >= 0; }
+
       function sameOuterMessageId(obj) { return messageId === obj.outer; }
-      var unconfirmedMessagesOfId = unconfirmed.filter(sameOuterMessageId);
+
+      var unconfirmedMessagesOfId = unconfirmed.filter(currentlyUsed).filter(sameOuterMessageId);
       if (unconfirmedMessagesOfId[0] != null) {
         var sender = createNodeFromJSON(json2);
         console.log(json.time + ": Received message from :" + sender.id + " to: " + receiver.id);
