@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.2.0/vis.min.css" />
-    <link rel="stylesheet" type="text/css" href="./css/visualization.css" />
-    <script type="text/javascript" src="http://requirejs.org/docs/release/2.1.18/minified/require.js" data-main="script/init"></script>
-    <title>messaging visualization</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.2.0/vis.min.css" />
+  <link rel="stylesheet" type="text/css" href="./css/visualization.css" />
+  <script type="text/javascript" src="http://requirejs.org/docs/release/2.1.18/minified/require.js" data-main="script/init"></script>
+  <title>Akka Messaging Visualization</title>
 </head>
 
 <body>
-    <header><h1>messaging within Akka system visualization</h1></header>
+  <nav>
+    <p id="nav-buttons">
+      <button id="move-backward">Undo last event</button>
+      <button id="move-forward">Play next event</button>
+    </p>
 
+    <ol id="log-list"></ol>
+  </nav>
+
+  <article>
+    <header><h1>Akka Messaging Visualization</h1></header>
     <section id="messages-graph"></section>
+  </article>
 </body>
 </html>

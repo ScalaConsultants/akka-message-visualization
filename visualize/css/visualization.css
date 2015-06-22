@@ -1,14 +1,64 @@
-html, body, #messages-graph {
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+
+*, p, ol {
+  margin: 0;
+}
+
+html, body {
+  background-color: darkgrey;
   height: 100%;
   width:  100%;
 }
 
-header {
-  width:      100%;
-  position:   absolute;
-  text-align: center;
+article, h1 {
+  height: 100%;
+  overflow: hidden;
+  width: 66%;
 }
 
-#messages-graph {
-  background-color: lightgray;
+nav {
+  float: right;
+  height: 100%;
+  width: 33%;
+}
+
+header, h1, #nav-buttons {
+  height:        10%;
+  min-height:    50px;
+  text-align:    center;
+}
+
+#messages-graph, #log-list {
+  height: 90%;
+}
+
+header, #messages-graph {
+  width: 100%%;
+}
+
+h1 {
+  position: absolute;
+  margin: 0;
+}
+
+#messages-graph, #log-list {
+  background-color: #eee;
+}
+
+header, #nav-buttons {
+  padding-top: 10px;
+  background-color: white;
+}
+
+#log-list {
+  overflow: scroll;
+}
+
+#log-list li {
+  font-family: 'Source Code Pro';
+  font-size:   8pt;
+}
+
+.current-log {
+  background-color: #ddd;
 }

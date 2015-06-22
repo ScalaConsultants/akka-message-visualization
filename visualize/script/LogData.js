@@ -22,6 +22,8 @@ function LogData(json) {
   this._json = json;
 }
 
+LogData.prototype.json = function() { return this._json; }
+
 LogData.prototype.time = function() { return this.containsTime() ? this._json[timeField] : "uknown time"; }
 
 LogData.prototype.containsCreated = function() {

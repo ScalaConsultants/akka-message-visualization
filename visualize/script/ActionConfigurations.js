@@ -44,6 +44,8 @@ function messageReceivedActionConfiguration() {
                                   filter(sameMessageId)[0];
   if (logData2 == null) {
     console.error("Receiver " + receiver.id + "couldn't be matched with a sender for " + messageId);
+    this.setForward(function() {});
+    this.setBackward(function() {});
     return;
   }
 
@@ -78,6 +80,8 @@ function messageReceivedActionConfiguration() {
     confirmedMessageRemovalAction.meta().confirmedId = confirmedId;
   } else {
     console.error("Couldn't match received message " + messageId);
+    this.setForward(function() {});
+    this.setBackward(function() {});
   }
 }
 
@@ -98,7 +102,7 @@ function removeConfirmedMessage() {
   this.setBackward(function() {
     logUndo(description);
     state.addEdge({
-      id:    innerId,
+      id:    confirmedId.inner,
       from:  sender.id,
       to:    receiver.id,
       label: messageId,
@@ -128,6 +132,8 @@ function messageSentActionConfiguration() {
                                   filter(sameMessageId)[0];
   if (logData2 == null) {
     console.error("Sender " + sender.id + " couldn't be matched with a receiver for " + messageId);
+    this.setForward(function() {});
+    this.setBackward(function() {});
     return;
   }
 

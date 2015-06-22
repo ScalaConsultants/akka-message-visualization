@@ -16,6 +16,8 @@ function GraphController(graphElementDomId, inputUrl) {
   this._state             = null;
 }
 
+GraphController.prototype.timeline     = function() { return (this._state != null) ? this._state.timeline() : null; }
+
 GraphController.prototype.startAnew    = function(graphStartedCallback) {
   if (this._state != null)
     this._state.destroy();
@@ -26,18 +28,20 @@ GraphController.prototype.canForward   = function() { return this._state != null
 GraphController.prototype.canBackward  = function() { return this._state != null && this._state.canBackward(); }
 GraphController.prototype.moveForward  = function(forwardedCallback) {
   if (this.canForward()) {
-    var forward  = this._state.getForward();
-    var backward = this._state.getBackward();
+    var previous = this._state.getBackward();
     this._state.moveForward();
-    forwardedCallback(this, forward, backward);
+    var current  = this._state.getBackward();
+    if (typeof (forwardedCallback) === "function")
+      forwardedCallback(this, current, previous);
   }
 }
 GraphController.prototype.moveBackward = function(backwardedCallback) {
   if (this.canBackward()) {
-    var backward = this._state.getBackward();
-    var forward  = this._state.getForward();
+    var previous = this._state.getBackward();
     this._state.moveBackward();
-    backwardedCallback(this, backward, forward);
+    var current  = this._state.getBackward();
+    if (typeof (backwardedCallback) === "function")
+      backwardedCallback(this, current, previous);
   }
 }
 
@@ -48,7 +52,7 @@ GraphController.prototype._fetchJsonLogThenInitializeFactoryAndGraph = function(
   }
   var that = this;
   function onDataFetched(jsonArray) {
-    console.log("Data fetched successfuly");
+    console.log("Data fetched successfully");
     that._initiateFactoryAndGraph(jsonArray, graphStartedCallback);
   }
   console.log("Ordering data fetch");
@@ -65,7 +69,8 @@ GraphController.prototype._initiateFactoryAndGraph = function(jsonArray, graphSt
 GraphController.prototype._initiateGraph = function(graphStartedCallback) {
   console.log("Creating new graph");
   this._state = this._factory.createGraph();
-  graphStartedCallback(this);
+  if (typeof (graphStartedCallback) === "function")
+    graphStartedCallback(this);
 }
 
 GraphController.prototype._startGraph = function(graphStartedCallback) {

@@ -1,6 +1,8 @@
 'use strict';
 
-var lastController; // for debugging
+// for debugging
+var graphController;
+var visualizationController;
 
 require.config({
   paths: {
@@ -12,33 +14,22 @@ require.config({
 require([
   'jquery',
   'GraphController',
-], function($, GraphController) {
+  'VisualizationController'
+], function($, GraphController, VisualizationController) {
 
 console.log("init module loaded");
 
-var graphElementDomId  = 'messages-graph';
-var inputFile          = './data.txt';
-var animationStepMs    = 500;
-
-function runEnqueuedAction(controller) {
-  console.log("Callback called");
-
-  function rerunAfterDelay() {
-    console.log("Scheduling next graph update if needed");
-    if (controller.canForward())
-      setTimeout(function() { runEnqueuedAction(controller); }, animationStepMs);
-  }
-
-  if (controller.canForward()) {
-    console.log("Scheduled graph update");
-    controller.moveForward(rerunAfterDelay);
-  }
-}
+var graphElementDomId     = 'messages-graph';
+var forwardButtonDomName  = '#move-forward';
+var backwardButtonDomName = '#move-backward';
+var logContainerDomName   = '#log-list';
+var logElementDomName     = 'li';
+var inputFile             = './data.txt';
 
 function onDocumentReady() {
-  var controller = new GraphController(graphElementDomId, inputFile);
-  controller.startAnew(function() { runEnqueuedAction(controller); });
-  lastController = controller;
+  graphController = new GraphController(graphElementDomId, inputFile);
+  visualizationController = new VisualizationController(graphController, forwardButtonDomName, backwardButtonDomName, logContainerDomName, logElementDomName);
+  visualizationController.startAnew();
 }
 
 $(document).ready(onDocumentReady);

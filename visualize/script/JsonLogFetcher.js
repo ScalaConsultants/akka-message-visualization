@@ -17,7 +17,8 @@ JsonLogFetcher.prototype.fetchData = function(callback) {
   var that = this;
 
   if (this._data != null) {
-    callback(this._data);
+    if (typeof(callback) === "function")
+      callback(this._data);
     return;
   }
 
@@ -26,7 +27,8 @@ JsonLogFetcher.prototype.fetchData = function(callback) {
   rawData.onload = function() {
     if (that._requestSuccessful(rawData)) {
       that._data = that._parseRawData(rawData.responseText);
-      callback(that._data);
+      if (typeof(callback) === "function")
+        callback(that._data);
     }
   }
   rawData.onerror = function(error) {
