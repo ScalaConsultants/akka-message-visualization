@@ -142,3 +142,34 @@ directory and run command:
 It will run simple client allowing you to access content of the folder through `localhost:8000`:
 
     http://localhost:8000/index.html
+    
+## Design of PoC, limitations and conclusions
+
+To generate visualization of messaging within Akka system we need to know when actors are spawned and stopped, and when
+they send and receive messages. Birth and death of actor let us visualize its whole lifecycle, not just the time span
+from first transfer of message concerning it to the last one. Visualization of message transfer requires knowledge of
+sender, receiver and when sending and receiving happened.
+ 
+Unfortunately currently Akka doesn't allow us to perform non-invasive way of listening of all of those events. While
+lifecycle logging option allow us to learn about when actors were created, restarted or stopped it doesn't support
+logging messaging out-of-the box. I haven't also found a way to add such listeners globally even using extensions.
+
+Therefore monitoring of leaving and arriving messages is done explicitly using `ActorMonitor` trait, `monitorIncoming`
+partial function and `monitorOutgoing` `ActorRef` wrapper. They use `MessagingLogger` extension to supply uniform
+logging format for 4 interesting us events (actor creation/stopping, message arrival/departure).
+
+Since at both departure and arrival we have access only to message and current actor to obtain whole transmission we
+need to store both events separately and pair them together later on. Simplest solution would be pairing them by message
+since it is the only common part in both events. When we create new message each time, message's hash should be enough
+to pair both events (assuming that it wasn't overridden from `Object`s default one), and message's type will be useful
+additional information. Similarly we can use such hash to distinguish actors. Such simplified use case is currently
+implemented in test application.
+
+However, this will produce invalid results in case we either override hashcode or reuse the same message over more than
+one recorded transmission. Hash would also change if message came from a remote actor. To work around such issue we
+would have to wrap message with object that would carry some unique identifier and after message arrival unwrap it for
+a partial functions. `MessagingLogger` would then ignore wrapper and record only message and unique identifier.
+   
+Those limitations mean that the project which would decide on using visualization would have to introduce a lot of
+boilerplate code and additional conventions. Depending on usefulness of the tool we might consider request Akka authors
+for API which would allow us to avoid changes all over the project.
