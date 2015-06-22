@@ -1,5 +1,11 @@
 'use strict';
 
+define([
+  'utils'
+], function(utils) {
+
+console.log("JsonLogFetcher module loaded");
+
 var errorMessage = 'Failed to read "data.txt"';
 
 function JsonLogFetcher(inputUrl) {
@@ -39,10 +45,14 @@ JsonLogFetcher.prototype._parseRawData = function(data) {
     }
   }
 
-  return data.split("\n").map(safeParse).filter(notNull);
+  return data.split("\n").map(safeParse).filter(utils.notNull);
 }
 
 JsonLogFetcher.prototype._requestSuccessful = function(req) {
   return req.readyState == 4 &&
          (req.status == 0 || (req.status >= 200 && req.status < 300) || req.status == 304 || req.status == 1223);
 }
+
+return JsonLogFetcher;
+});
+

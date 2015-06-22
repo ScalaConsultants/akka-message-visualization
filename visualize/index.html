@@ -5,16 +5,7 @@
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.2.0/vis.min.css" />
     <link rel="stylesheet" type="text/css" href="./css/visualization.css" />
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.2.0/vis.min.js"></script>
-    <script type="text/javascript" src="./js/utils.js"></script>
-    <script type="text/javascript" src="./js/JsonLogFetcher.js"></script>
-    <script type="text/javascript" src="./js/LogData.js"></script>
-    <script type="text/javascript" src="./js/GraphAction.js"></script>
-    <script type="text/javascript" src="./js/ActionConfigurations.js"></script>
-    <script type="text/javascript" src="./js/GraphState.js"></script>
-    <script type="text/javascript" src="./js/GraphFactory.js"></script>
-    <script type="text/javascript" src="./js/GraphController.js"></script>
-    <script type="text/javascript" src="./js/init.js"></script>
+    <script type="text/javascript" src="http://requirejs.org/docs/release/2.1.18/minified/require.js" data-main="script/init"></script>
     <title>messaging visualization</title>
 </head>
 
@@ -22,7 +13,5 @@
     <header><h1>messaging within Akka system visualization</h1></header>
 
     <section id="messages-graph"></section>
-
-    <script type="text/javascript">onDocumentReady();</script>
 </body>
 </html>

@@ -1,5 +1,10 @@
 'use strict';
 
+define([
+], function() {
+
+console.log("GraphAction module loaded");
+
 function GraphAction(state, logData) {
   this._state            = state;
   this._logData          = logData;
@@ -36,3 +41,6 @@ GraphAction.prototype.actBackward = function() {
       console.error(e);
     }
 }
+
+return GraphAction;
+});

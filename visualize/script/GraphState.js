@@ -1,5 +1,12 @@
 'use strict';
 
+define([
+  'vis',
+  'utils'
+], function(vis, utils) {
+
+console.log("GraphState module loaded");
+
 function GraphState(logDataTimeline, graphElementDomId) {
   this._timeline  = logDataTimeline; // log in form of sorted list of LogData objects
 
@@ -42,7 +49,7 @@ GraphState.prototype.updateNode     = function(id, updatedProperties) {
   this._data.nodes.update(updateObj);
 }
 
-GraphState.prototype.confirm        = function(idPair) { remove(this._unconfirmed, idPair); }
+GraphState.prototype.confirm        = function(idPair) { utils.remove(this._unconfirmed, idPair); }
 GraphState.prototype.addUnconfirmed = function(idPair) { this._unconfirmed.push(idPair); }
 GraphState.prototype.unconfirmed    = function() { return this._unconfirmed; }
 
@@ -73,3 +80,7 @@ GraphState.prototype.moveBackward   = function() {
     this.enqueForward(action);
   }
 }
+
+return GraphState;
+});
+

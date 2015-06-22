@@ -1,5 +1,9 @@
 'use strict';
 
+define([
+  'GraphAction'
+], function(GraphAction) {
+
 function logDo(description)   { console.log("Perform: " + description); }
 function logUndo(description) { console.log("Undo: " + description); }
 
@@ -166,3 +170,11 @@ function actorStoppedActionConfiguration() {
     state.addNode(node);
   });
 }
+
+return {
+  createActor:     createActorActionConfiguration,
+  messageReceived: messageReceivedActionConfiguration,
+  messageSent:     messageSentActionConfiguration,
+  actorStopped:    actorStoppedActionConfiguration
+};
+});

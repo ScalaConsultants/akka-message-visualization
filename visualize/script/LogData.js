@@ -1,5 +1,11 @@
 'use strict';
 
+define([
+  'JsonLogFetcher'
+], function(JsonLogFetcher) {
+
+console.log("LogData module loaded");
+
 var createdClassField  = 'created_class';
 var createdHashField   = 'created_hash';
 var messageClassField  = 'message_class';
@@ -76,3 +82,7 @@ LogData.prototype.createNode = function() {
 LogData.prototype._createId = function(clas, hash) { return clas + '(' + hash + ')'; }
 
 LogData.prototype._createLabel = function(clas, hash) { return clas; }
+
+return LogData;
+});
+

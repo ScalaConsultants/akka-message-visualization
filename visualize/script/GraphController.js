@@ -1,7 +1,15 @@
 'use strict';
 
+define([
+  'JsonLogFetcher',
+  'LogData',
+  'GraphFactory'
+], function(JsonLogFetcher, LogData, GraphFactory) {
+
+console.log("GraphController module loaded");
+
 function GraphController(graphElementDomId, inputUrl) {
-  this._graphElementDomId = graphElementDOMId;
+  this._graphElementDomId = graphElementDomId;
   this._inputUrl          = inputUrl;
   this._fetcher           = null;
   this._factory           = null;
@@ -70,3 +78,6 @@ GraphController.prototype._startGraph = function(graphStartedCallback) {
     this._initiateGraph(graphStartedCallback);
   }
 }
+
+return GraphController;
+});
