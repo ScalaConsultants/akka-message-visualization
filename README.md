@@ -90,8 +90,8 @@ Alternatively, we can pass configuration via command line and utilize its featur
         grok { match => [
           "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Created: %{NOTSPACE:created_class}:%{NUMBER:created_hash}",
           "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Stopped: %{NOTSPACE:stopped_class}:%{NUMBER:stopped_hash}",
-          "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg Received: %{NOTSPACE:receiver_class}:%{NUMBER:receiver_hash} <- %{NOTSPACE:message_class}:%{NUMBER:message_hash}",
-          "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg Sent: %{NOTSPACE:sender_class}:%{NUMBER:sender_hash} -> %{NOTSPACE:message_class}:%{NUMBER:message_hash}"
+          "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg %{NUMBER:transmission} Received: %{NOTSPACE:receiver_class}:%{NUMBER:receiver_hash} <- %{NOTSPACE:message_class}:%{NUMBER:message_hash}",
+          "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg %{NUMBER:transmission} Sent: %{NOTSPACE:sender_class}:%{NUMBER:sender_hash} -> %{NOTSPACE:message_class}:%{NUMBER:message_hash}"
         ] }
         mutate { remove_field => ["message","@version","@timestamp","host","path","_grokparsefailure"] }
       }
@@ -103,30 +103,29 @@ Alternatively, we can pass configuration via command line and utilize its featur
                  path  => "$PWD/visualize/data.txt" }
       }
     CONFIG
-    $ logstash -e $logstash_config
+    $ cd v  
 
 Once we'll see `Logstash startup completed` message we'll know that logstash started observing `log/` directory for
 changes in `monitor*.log` files. Then we can run our test application in another terminal and let logstash do its work
 in the background. Hopefully we'll get something like:
  
     Logstash startup completed
-    {"time":"2015-06-19T10:58:54,318Z","created_class":"io.scalac.amv.testapp.PingActor","created_hash":"1974990182"}
-    {"time":"2015-06-19T10:58:54,318Z","created_class":"io.scalac.amv.testapp.PongActor","created_hash":"1656124757"}
-    {"time":"2015-06-19T10:58:54,321Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1974990182","message_class":"io.scalac.amv.testapp.PingActor$Initialize$","message_hash":"-1430411344"}
-    {"time":"2015-06-19T10:58:54,329Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1974990182","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-19T10:58:54,329Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"1656124757","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-19T10:58:54,331Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"1656124757","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-19T10:58:54,332Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1974990182","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-19T10:58:54,332Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1974990182","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-19T10:58:54,332Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"1656124757","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-19T10:58:54,332Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"1656124757","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-19T10:58:54,333Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1974990182","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-19T10:58:54,333Z","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1974990182","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-19T10:58:54,333Z","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"1656124757","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-19T10:58:54,333Z","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"1656124757","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-19T10:58:54,333Z","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1974990182","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-19T10:58:54,342Z","stopped_class":"io.scalac.amv.testapp.PongActor","stopped_hash":"1656124757"}
-    {"time":"2015-06-19T10:58:54,344Z","stopped_class":"io.scalac.amv.testapp.PingActor","stopped_hash":"1974990182"}
+    {"time":"2015-06-23T14:20:41,505Z","created_class":"io.scalac.amv.testapp.PongActor","created_hash":"177961682"}
+    {"time":"2015-06-23T14:20:41,505Z","created_class":"io.scalac.amv.testapp.PingActor","created_hash":"1104535636"}
+    {"time":"2015-06-23T14:20:41,513Z","transmission":"8928329738146084964","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41,514Z","transmission":"8928329738146084964","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41,518Z","transmission":"-2831032146892188031","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41,518Z","transmission":"-2831032146892188031","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41,519Z","transmission":"2706173154284636071","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41,519Z","transmission":"2706173154284636071","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41,519Z","transmission":"8891833362865728270","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41,520Z","transmission":"8891833362865728270","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41,520Z","transmission":"-4019579096403579839","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41,520Z","transmission":"-4019579096403579839","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41,520Z","transmission":"4677494376210994657","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41,521Z","transmission":"4677494376210994657","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41,532Z","stopped_class":"io.scalac.amv.testapp.PongActor","stopped_hash":"177961682"}
+    {"time":"2015-06-23T14:20:41,535Z","stopped_class":"io.scalac.amv.testapp.PingActor","stopped_hash":"1104535636"}
 
 Result would be JSON objects separated by new lines.
 

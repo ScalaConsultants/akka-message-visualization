@@ -17,6 +17,7 @@ var senderHashField    = 'sender_hash';
 var stoppedClassField  = 'stopped_class';
 var stoppedHashField   = 'stopped_hash';
 var timeField          = 'time';
+var transmissionField  = 'transmission';
 
 function LogData(json) {
   this._json = json;
@@ -48,9 +49,12 @@ LogData.prototype.containsStopped = function() {
 LogData.prototype.containsTime = function() {
   return this._json.hasOwnProperty(timeField);
 }
+LogData.prototype.containsTransmission = function() {
+  return this._json.hasOwnProperty(transmissionField);
+}
 
 LogData.prototype.createMessageId = function() {
-  return this.containsMessage() ? this._createId(this._json[messageClassField], this._json[messageHashField]) : null;
+  return this.containsTransmission() ? this._json[transmissionField] : null;
 }
 
 LogData.prototype.createNode = function() {
