@@ -166,8 +166,8 @@ implemented in test application.
 
 However, this will produce invalid results in case we either override hashcode or reuse the same message over more than
 one recorded transmission. Hash would also change if message came from a remote actor. To work around such issue we
-would have to wrap message with object that would carry some unique identifier and after message arrival unwrap it for
-a partial functions. `MessagingLogger` would then ignore wrapper and record only message and unique identifier.
+wrapped messages with `MessageWithID` that carries some unique identifier and after message arrival we unwrap it for
+a partial functions. `MessagingLogger` ignores wrapper and records message and unique identifier.
    
 Those limitations mean that the project which would decide on using visualization would have to introduce a lot of
 boilerplate code and additional conventions. Depending on usefulness of the tool we might consider request Akka authors
