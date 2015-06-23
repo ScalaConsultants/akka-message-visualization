@@ -15,9 +15,9 @@ class MessagingLoggerImpl(system: ExtendedActorSystem) extends Extension {
   def registerStopping(stoppedClass: String, stoppedHash: Int) =
     log(s"Stopped: $stoppedClass:$stoppedHash")
 
-  def registerIncomingMessage(receiverClass: String, receiverHash: Int, messageClass: String, messageHash: Int) =
+  def registerIncomingMessage(receiverClass: String, receiverHash: Int, messageClass: String, messageHash: Int, transmissionID: Long) =
     log(s"Msg Received: $receiverClass:$receiverHash <- $messageClass:$messageHash")
 
-  def registerOutgoingMessage(senderClass: String, senderHash: Int, messageClass: String, messageHash: Int) =
+  def registerOutgoingMessage(senderClass: String, senderHash: Int, messageClass: String, messageHash: Int, transmissionID: Long) =
     log(s"Msg Sent: $senderClass:$senderHash -> $messageClass:$messageHash")
 }
