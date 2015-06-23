@@ -57,6 +57,10 @@ LogData.prototype.createMessageId = function() {
   return this.containsTransmission() ? this._json[transmissionField] : null;
 }
 
+LogData.prototype.createMessageLabel = function() {
+  return this.containsMessage() ? this._createId(this._json[messageClassField], this._json[messageHashField]) : null;
+}
+
 LogData.prototype.createNode = function() {
   var clas = null;
   var hash = null;

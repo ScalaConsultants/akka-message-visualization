@@ -89,6 +89,7 @@ function removeConfirmedMessage() {
   var logData     = this.logData();
   var state       = this.state();
   var messageId   = logData.createMessageId();
+  var edgeLabel   = logData.createMessageLabel();
   var sender      = this.meta().sender;
   var receiver    = this.meta().receiver;
   var confirmedId = this.meta().confirmedId;
@@ -105,7 +106,7 @@ function removeConfirmedMessage() {
       id:    confirmedId.inner,
       from:  sender.id,
       to:    receiver.id,
-      label: messageId,
+      label: edgeLabel,
       color: 'green'
     });
   });
@@ -116,6 +117,7 @@ function messageSentActionConfiguration() {
   var state     = this.state();
   var sender    = logData.createNode();
   var messageId = logData.createMessageId();
+  var edgeLabel = logData.createMessageLabel();
 
   function containsReceiver(j) { return j.containsReceiver(); }
 
@@ -148,7 +150,7 @@ function messageSentActionConfiguration() {
       id:    innerId,
       from:  sender.id,
       to:    receiver.id,
-      label: messageId,
+      label: edgeLabel,
       color: 'red'
     });
     state.addUnconfirmed(unconfirmed);
