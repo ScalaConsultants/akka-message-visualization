@@ -15,12 +15,14 @@ html, body {
 /* tabs */
 
 main {
-  display: none;
+  position: absolute;
+  z-index: -10;
 }
 main.active-tab {
   display: block;
   height: 100%;
   width: 100%;
+  z-index: 10;
 }
 
 nav {

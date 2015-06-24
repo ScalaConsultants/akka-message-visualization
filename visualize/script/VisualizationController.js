@@ -16,8 +16,7 @@ function VisualizationController(config, tabController, graphController, timelin
 }
 
 VisualizationController.prototype.initialize = function() {
-  var that = this;
-  this._tabController.initialize(that);
+  this._tabController.initialize();
   this.startAnew();
 }
 

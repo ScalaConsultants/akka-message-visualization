@@ -28,23 +28,30 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
   this._rawTimeline = jsonArray.map(function(json) { return new LogData(json); });
   var rawTimeline = this._rawTimeline;
 
-  function containsCreated(logData) { return logData.containsCreated(); }
-  function pairWithStopped(logData) {
+  function pairActorCreationAndStopping(logData) {
+    if (!logData.containsCreated())
+      return null;
     var created = logData.createNode();
     function isPair(logData2) { return logData2.containsStopped() && logData2.createNode().id === created.id; }
     var pair = rawTimeline.filter(isPair)[0];
-    return (pair != null) ? { content: created.id, start: logData.time(), end: pair.time() } : null;
+    return (pair != null) ? { content: "Actor: "+created.id, start: logData.time(), end: pair.time() } : null;
   }
-  var lifecycle = rawTimeline.filter(containsCreated).map(pairWithStopped).filter(utils.notNull);
+  var lifecycle = rawTimeline.map(pairActorCreationAndStopping).filter(utils.notNull);
 
-  function containsSender(logData) { return logData.containsSender(); }
-  function pairWithReceived(logData) {
+  function pairMessageDepartureAndArrival(logData) {
+    if (!logData.containsSender())
+      return null;
     var messageId = logData.createMessageId();
     function isPair(logData2) { return logData2.containsReceiver() && logData2.createMessageId() === messageId; }
     var pair = rawTimeline.filter(isPair)[0];
-    return (pair != null) ? { content: logData.createMessageLabel(), start: logData.time(), end: pair.time() } : null;
+    if (pair == null)
+      return null;
+    var sender   = logData.createNode().label;
+    var receiver = pair.createNode().label;
+    var label    = "Msg: "+pair.createMessageLabel()+" from "+sender+" to "+receiver;
+    return { content: label, start: logData.time(), end: pair.time() };
   }
-  var transmissions = rawTimeline.filter(containsSender).map(pairWithStopped).filter(utils.notNull);
+  var transmissions = rawTimeline.map(pairMessageDepartureAndArrival).filter(utils.notNull);
 
   var rawData = [].concat(lifecycle).concat(transmissions);
 
