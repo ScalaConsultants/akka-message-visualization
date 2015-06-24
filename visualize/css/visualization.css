@@ -30,6 +30,7 @@ nav {
   padding: 5px;
   position: fixed;
   top: 50%;
+  z-index: 100;
 }
 nav ul {
   font-weight: bold;
@@ -52,17 +53,17 @@ aside {
   width: 33%;
 }
 
-header, h1, #graph-time-buttons {
+header, h1, aside > p {
   height:        10%;
   min-height:    50px;
   text-align:    center;
 }
 
-#messages-graph, #log-list-graph {
+section, aside > ol {
   height: 90%;
 }
 
-header, #messages-graph {
+header, section {
   width: 100%%;
 }
 
@@ -71,25 +72,26 @@ h1 {
   margin: 0;
 }
 
-/* graph tab */
 
-#messages-graph, #log-list-graph {
+section, aside > ol {
   background-color: #eee;
 }
 
-header, #graph-time-buttons {
+header, aside > p {
   padding-top: 10px;
   background-color: white;
 }
 
-#log-list-graph {
+aside > ol {
   overflow: scroll;
 }
 
-#log-list-graph li {
+aside > ol li {
   font-family: 'Source Code Pro';
   font-size:   8pt;
 }
+
+/* graph tab */
 
 .current-log {
   background-color: #ddd;

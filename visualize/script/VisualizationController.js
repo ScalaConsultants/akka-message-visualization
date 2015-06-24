@@ -7,13 +7,15 @@ define([
 
 console.log("VisualizationController module loaded");
 
-function VisualizationController(config, graphController) {
+function VisualizationController(config, tabController, graphController) {
   this._config          = config;
+  this._tabController   = tabController;
   this._graphController = graphController;
   this._updateInterface(graphController);
 }
 
 VisualizationController.prototype.initialize = function() {
+  this._tabController.initialize();
   this.startAnew();
 }
 
@@ -29,7 +31,6 @@ VisualizationController.prototype.moveForward = function() {
     this._graphController.moveForward(function (g, c, p) { that._onMoved(g, c, p); });
   }
 }
-
 
 VisualizationController.prototype.moveBackward = function() {
   console.log("Trying to move backward");

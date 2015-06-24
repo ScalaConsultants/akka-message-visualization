@@ -12,14 +12,14 @@
 <body>
   <nav>
     <ul>
-      <li><a id="set-graph" href="#">Graph</a></li>
-      <li><a id="set-timeline" href="#">Timeline</a></li>
+      <li><button id="set-graph">Graph</button></li>
+      <li><button id="set-timeline">Timeline</button></li>
     </ul>
   </nav>
 
-  <main class="active-tab">
+  <main id="graph-tab" class="active-tab">
     <aside>
-      <p id="graph-time-buttons">
+      <p>
         <button id="move-backward">Undo last event</button>
         <button id="move-forward">Play next event</button>
       </p>
@@ -33,8 +33,10 @@
     </article>
   </main>
 
-  <main>
+  <main id="timeline-tab">
     <aside>
+      <p></p>
+
       <ol id="log-list-timeline"></ol>
     </aside>
 

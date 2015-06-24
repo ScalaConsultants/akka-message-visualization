@@ -2,6 +2,7 @@
 
 // for debugging
 var config;
+var tabController;
 var graphController;
 var visualizationController;
 
@@ -15,16 +16,18 @@ require.config({
 require([
   'jquery',
   'Config',
+  'TabController',
   'GraphController',
   'VisualizationController'
-], function($, Config, GraphController, VisualizationController) {
+], function($, Config, TabController, GraphController, VisualizationController) {
 
 console.log("init module loaded");
 
 function onDocumentReady() {
   config = new Config();
+  tabController = new TabController(config);
   graphController = new GraphController(config);
-  visualizationController = new VisualizationController(config, graphController);
+  visualizationController = new VisualizationController(config, tabController, graphController);
   visualizationController.initialize();
 }
 
