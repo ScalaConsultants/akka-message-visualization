@@ -8,12 +8,11 @@ define([
 
 console.log("GraphController module loaded");
 
-function GraphController(graphElementDomId, inputUrl) {
-  this._graphElementDomId = graphElementDomId;
-  this._inputUrl          = inputUrl;
-  this._fetcher           = null;
-  this._factory           = null;
-  this._state             = null;
+function GraphController(config) {
+  this._config  = config;
+  this._fetcher = null;
+  this._factory = null;
+  this._state   = null;
 }
 
 GraphController.prototype.timeline     = function() { return (this._state != null) ? this._state.timeline() : null; }
@@ -48,7 +47,7 @@ GraphController.prototype.moveBackward = function(backwardedCallback) {
 GraphController.prototype._fetchJsonLogThenInitializeFactoryAndGraph = function(graphStartedCallback) {
   if (this._fetcher == null) {
     console.log("No fetcher initialized - creating one now")
-    this._fetcher = new JsonLogFetcher(this._inputUrl);
+    this._fetcher = new JsonLogFetcher(this._config.getInputFileName());
   }
   var that = this;
   function onDataFetched(jsonArray) {
@@ -62,7 +61,7 @@ GraphController.prototype._fetchJsonLogThenInitializeFactoryAndGraph = function(
 GraphController.prototype._initiateFactoryAndGraph = function(jsonArray, graphStartedCallback) {
   console.log("Initializing GraphFactory");
   var timeline  = jsonArray.map(function(json) { return new LogData(json); });
-  this._factory = new GraphFactory(timeline, this._graphElementDomId);
+  this._factory = new GraphFactory(timeline, this._config.getGraphId());
   this._initiateGraph(graphStartedCallback);
 }
 

@@ -1,6 +1,7 @@
 'use strict';
 
 // for debugging
+var config;
 var graphController;
 var visualizationController;
 
@@ -13,23 +14,18 @@ require.config({
 
 require([
   'jquery',
+  'Config',
   'GraphController',
   'VisualizationController'
-], function($, GraphController, VisualizationController) {
+], function($, Config, GraphController, VisualizationController) {
 
 console.log("init module loaded");
 
-var graphElementDomId     = 'messages-graph';
-var forwardButtonDomName  = '#move-forward';
-var backwardButtonDomName = '#move-backward';
-var logContainerDomName   = '#log-list';
-var logElementDomName     = 'li';
-var inputFile             = './data.txt';
-
 function onDocumentReady() {
-  graphController = new GraphController(graphElementDomId, inputFile);
-  visualizationController = new VisualizationController(graphController, forwardButtonDomName, backwardButtonDomName, logContainerDomName, logElementDomName);
-  visualizationController.startAnew();
+  config = new Config();
+  graphController = new GraphController(config);
+  visualizationController = new VisualizationController(config, graphController);
+  visualizationController.initialize();
 }
 
 $(document).ready(onDocumentReady);

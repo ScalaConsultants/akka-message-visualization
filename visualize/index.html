@@ -11,17 +11,37 @@
 
 <body>
   <nav>
-    <p id="nav-buttons">
-      <button id="move-backward">Undo last event</button>
-      <button id="move-forward">Play next event</button>
-    </p>
-
-    <ol id="log-list"></ol>
+    <ul>
+      <li><a id="set-graph" href="#">Graph</a></li>
+      <li><a id="set-timeline" href="#">Timeline</a></li>
+    </ul>
   </nav>
 
-  <article>
-    <header><h1>Akka Messaging Visualization</h1></header>
-    <section id="messages-graph"></section>
-  </article>
+  <main class="active-tab">
+    <aside>
+      <p id="graph-time-buttons">
+        <button id="move-backward">Undo last event</button>
+        <button id="move-forward">Play next event</button>
+      </p>
+
+      <ol id="log-list-graph"></ol>
+    </aside>
+
+    <article>
+      <header><h1>Akka Messaging Visualization: Graph</h1></header>
+      <section id="messages-graph"></section>
+    </article>
+  </main>
+
+  <main>
+    <aside>
+      <ol id="log-list-timeline"></ol>
+    </aside>
+
+    <article>
+      <header><h1>Akka Messaging Visualization: Timeline</h1></header>
+      <section id="timeline-graph"></section>
+    </article>
+  </main>
 </body>
 </html>

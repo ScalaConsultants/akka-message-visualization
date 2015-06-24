@@ -1,5 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
 
+/* general */
+
 *, p, ol {
   margin: 0;
 }
@@ -10,25 +12,53 @@ html, body {
   width:  100%;
 }
 
+/* tabs */
+
+main {
+  display: none;
+}
+main.active-tab {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+nav {
+  background-color: #f4f4f4;
+  border: 3px solid white;
+  border-radius: 5px;
+  padding: 5px;
+  position: fixed;
+  top: 50%;
+}
+nav ul {
+  font-weight: bold;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* single tab */
+
 article, h1 {
   height: 100%;
   overflow: hidden;
   width: 66%;
 }
 
-nav {
+aside {
   float: right;
   height: 100%;
   width: 33%;
 }
 
-header, h1, #nav-buttons {
+header, h1, #graph-time-buttons {
   height:        10%;
   min-height:    50px;
   text-align:    center;
 }
 
-#messages-graph, #log-list {
+#messages-graph, #log-list-graph {
   height: 90%;
 }
 
@@ -41,20 +71,22 @@ h1 {
   margin: 0;
 }
 
-#messages-graph, #log-list {
+/* graph tab */
+
+#messages-graph, #log-list-graph {
   background-color: #eee;
 }
 
-header, #nav-buttons {
+header, #graph-time-buttons {
   padding-top: 10px;
   background-color: white;
 }
 
-#log-list {
+#log-list-graph {
   overflow: scroll;
 }
 
-#log-list li {
+#log-list-graph li {
   font-family: 'Source Code Pro';
   font-size:   8pt;
 }

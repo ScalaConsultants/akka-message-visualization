@@ -7,13 +7,14 @@ define([
 
 console.log("VisualizationController module loaded");
 
-function VisualizationController(graphController, forwardButtonDomName, backwardButtonDomName, logContainerDomName, logElementDomName) {
-  this._graphController     = graphController;
-  this._forwardButtonDom    = $(forwardButtonDomName);
-  this._backwardButtonDom   = $(backwardButtonDomName);
-  this._logContainerDomName = logContainerDomName;
-  this._logElementDomName   = logElementDomName;
+function VisualizationController(config, graphController) {
+  this._config          = config;
+  this._graphController = graphController;
   this._updateInterface(graphController);
+}
+
+VisualizationController.prototype.initialize = function() {
+  this.startAnew();
 }
 
 VisualizationController.prototype.startAnew = function() {
@@ -40,25 +41,25 @@ VisualizationController.prototype.moveBackward = function() {
 
 VisualizationController.prototype._onStartedAnew = function(graphController) {
   console.log("Loading timeline into navigation");
-  $(this._logContainerDomName).empty();
+  this._config.getLogContainerElement().empty();
 
   var timeline = graphController.timeline();
   for (var index in timeline) {
     var id    = this._logToId(timeline[index]);
     var value = JSON.stringify(timeline[index].json());
-    var child = '<' + this._logElementDomName + ' id="' + id + '">' + value + '</' + this._logElementDomName + '.>';
-    $(this._logContainerDomName).append(child);
+    var child = '<' + this._config.getLogTag() + ' id="' + id + '">' + value + '</' + this._config.getLogTag() + '.>';
+    this._config.getLogContainerElement().append(child);
   }
 
   this._updateInterface(graphController);
 }
 
 VisualizationController.prototype._onMoved = function(graphController, currentPosition) {
-  $('.current-log').removeClass('current-log');
+  this._config.getCurrentLogElement().removeClass(this._config.getCurrentLogClass());
 
   if (currentPosition != null) {
     var id = '#' + this._logToId(currentPosition.logData());
-    $(id).addClass('current-log');
+    $(id).addClass(this._config.getCurrentLogClass());
   }
 
   this._updateInterface(graphController);
@@ -69,20 +70,20 @@ VisualizationController.prototype._updateInterface = function(graphController) {
 
   var that = this;
 
-  this._forwardButtonDom.off('click');
+  this._config.getForwardButtonElement().off('click');
   if (this._graphController.canForward()) {
-    this._forwardButtonDom.click(function() { that.moveForward(); });
-    this._forwardButtonDom.prop('disabled', false);
+    this._config.getForwardButtonElement().click(function() { that.moveForward(); });
+    this._config.getForwardButtonElement().prop('disabled', false);
   } else {
-    this._forwardButtonDom.prop('disabled', true);
+    this._config.getForwardButtonElement().prop('disabled', true);
   }
 
-  this._backwardButtonDom.off('click');
+  this._config.getBackwardButtonElement().off('click');
   if (this._graphController.canBackward()) {
-    this._backwardButtonDom.click(function() { that.moveBackward() });
-    this._backwardButtonDom.prop('disabled', false);
+    this._config.getBackwardButtonElement().click(function() { that.moveBackward() });
+    this._config.getBackwardButtonElement().prop('disabled', false);
   } else {
-    this._backwardButtonDom.prop('disabled', true);
+    this._config.getBackwardButtonElement().prop('disabled', true);
   }
 }
 
