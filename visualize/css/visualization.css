@@ -27,9 +27,10 @@ main.active-tab {
 }
 
 nav {
-  background-color: #f4f4f4;
+  background-color: #e0e0e0;
   border: 3px solid white;
   border-radius: 5px;
+  cursor: move;
   padding: 5px;
   position: fixed;
   top: 50%;
@@ -79,7 +80,7 @@ h1, h2 {
 h2 { font-size: 16pt; }
 
 section, aside > ol {
-  background-color: #eee;
+  background-color: #e0e0e0;
 }
 
 header, aside > p {
