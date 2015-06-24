@@ -28,13 +28,20 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
   this._rawTimeline = jsonArray.map(function(json) { return new LogData(json); });
   var rawTimeline = this._rawTimeline;
 
+  var groups = [];
+
   function pairActorCreationAndStopping(logData) {
     if (!logData.containsCreated())
       return null;
     var created = logData.createNode();
     function isPair(logData2) { return logData2.containsStopped() && logData2.createNode().id === created.id; }
     var pair = rawTimeline.filter(isPair)[0];
-    return (pair != null) ? { content: "Actor: "+created.id, start: logData.time(), end: pair.time() } : null;
+    if (pair == null)
+      return null;
+    var label = "Actor: "+created.id;
+    var group = groups.length;
+    groups.push({ id: group, content: label });
+    return { content: label, group: group, start: logData.time(), end: pair.time() };
   }
   var lifecycle = rawTimeline.map(pairActorCreationAndStopping).filter(utils.notNull);
 
@@ -48,18 +55,22 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
       return null;
     var sender   = logData.createNode().label;
     var receiver = pair.createNode().label;
-    var label    = "Msg: "+pair.createMessageLabel()+" from "+sender+" to "+receiver;
-    return { content: label, start: logData.time(), end: pair.time() };
+    var label    = "Msg: "+pair.createMessageLabel()+"<br/>  from "+sender+"<br/>  to "+receiver;
+    var group    = groups.length;
+    groups.push({ id: group, content: label });
+    return { content: label, group: group, start: logData.time(), end: pair.time() };
   }
   var transmissions = rawTimeline.map(pairMessageDepartureAndArrival).filter(utils.notNull);
 
-  var rawData = [].concat(lifecycle).concat(transmissions);
+  var rawData = lifecycle.concat(transmissions);
 
   var container = document.getElementById(this._config.getTimelineId());
   var options = {};
   var data = new vis.DataSet(rawData);
 
-  this._timeline = new vis.Timeline(container, data, options);
+  this._timeline = new vis.Timeline(container, null, options);
+  this._timeline.setGroups(groups);
+  this._timeline.setItems(data);
 
   if (typeof (timelineStartedCallback) === "function")
       timelineStartedCallback(this);
