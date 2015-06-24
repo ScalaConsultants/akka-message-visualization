@@ -22,7 +22,7 @@ and make sure that logging format in `logback.xml` follow the defined pattern:
       ...
       <appender name="SomeName" class=...>
         <encoder>
-          <pattern>[%-5level] %date{ISO8601} - %msg%n</pattern>
+          <pattern>[%-5level] %date{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC} - %msg%n</pattern>
         </encoder>
         ...
       </appender>
@@ -110,22 +110,22 @@ changes in `monitor*.log` files. Then we can run our test application in another
 in the background. Hopefully we'll get something like:
  
     Logstash startup completed
-    {"time":"2015-06-23T14:20:41,505Z","created_class":"io.scalac.amv.testapp.PongActor","created_hash":"177961682"}
-    {"time":"2015-06-23T14:20:41,505Z","created_class":"io.scalac.amv.testapp.PingActor","created_hash":"1104535636"}
-    {"time":"2015-06-23T14:20:41,513Z","transmission":"8928329738146084964","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-23T14:20:41,514Z","transmission":"8928329738146084964","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-23T14:20:41,518Z","transmission":"-2831032146892188031","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-23T14:20:41,518Z","transmission":"-2831032146892188031","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-23T14:20:41,519Z","transmission":"2706173154284636071","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-23T14:20:41,519Z","transmission":"2706173154284636071","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-23T14:20:41,519Z","transmission":"8891833362865728270","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-23T14:20:41,520Z","transmission":"8891833362865728270","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-23T14:20:41,520Z","transmission":"-4019579096403579839","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-23T14:20:41,520Z","transmission":"-4019579096403579839","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
-    {"time":"2015-06-23T14:20:41,520Z","transmission":"4677494376210994657","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-23T14:20:41,521Z","transmission":"4677494376210994657","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
-    {"time":"2015-06-23T14:20:41,532Z","stopped_class":"io.scalac.amv.testapp.PongActor","stopped_hash":"177961682"}
-    {"time":"2015-06-23T14:20:41,535Z","stopped_class":"io.scalac.amv.testapp.PingActor","stopped_hash":"1104535636"}
+    {"time":"2015-06-23T14:20:41.505Z","created_class":"io.scalac.amv.testapp.PongActor","created_hash":"177961682"}
+    {"time":"2015-06-23T14:20:41.505Z","created_class":"io.scalac.amv.testapp.PingActor","created_hash":"1104535636"}
+    {"time":"2015-06-23T14:20:41.513Z","transmission":"8928329738146084964","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41.514Z","transmission":"8928329738146084964","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41.518Z","transmission":"-2831032146892188031","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41.518Z","transmission":"-2831032146892188031","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41.519Z","transmission":"2706173154284636071","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41.519Z","transmission":"2706173154284636071","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41.519Z","transmission":"8891833362865728270","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41.520Z","transmission":"8891833362865728270","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41.520Z","transmission":"-4019579096403579839","sender_class":"io.scalac.amv.testapp.PingActor","sender_hash":"1104535636","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41.520Z","transmission":"-4019579096403579839","receiver_class":"io.scalac.amv.testapp.PongActor","receiver_hash":"177961682","message_class":"io.scalac.amv.testapp.PingActor$PingMessage","message_hash":"696210608"}
+    {"time":"2015-06-23T14:20:41.520Z","transmission":"4677494376210994657","sender_class":"io.scalac.amv.testapp.PongActor","sender_hash":"177961682","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41.521Z","transmission":"4677494376210994657","receiver_class":"io.scalac.amv.testapp.PingActor","receiver_hash":"1104535636","message_class":"io.scalac.amv.testapp.PongActor$PongMessage","message_hash":"-595598217"}
+    {"time":"2015-06-23T14:20:41.532Z","stopped_class":"io.scalac.amv.testapp.PongActor","stopped_hash":"177961682"}
+    {"time":"2015-06-23T14:20:41.535Z","stopped_class":"io.scalac.amv.testapp.PingActor","stopped_hash":"1104535636"}
 
 Result would be JSON objects separated by new lines.
 
