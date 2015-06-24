@@ -41,7 +41,7 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
     var label = "Actor: "+created.id;
     var group = groups.length;
     groups.push({ id: group, content: label });
-    return { content: label, group: group, start: logData.time(), end: pair.time() };
+    return { content: created.id, group: group, start: logData.time(), end: pair.time() };
   }
   var lifecycle = rawTimeline.map(pairActorCreationAndStopping).filter(utils.notNull);
 
@@ -58,7 +58,7 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
     var label    = "Msg: "+pair.createMessageLabel()+"<br/>  from "+sender+"<br/>  to "+receiver;
     var group    = groups.length;
     groups.push({ id: group, content: label });
-    return { content: label, group: group, start: logData.time(), end: pair.time() };
+    return { content: pair.createMessageLabel(), group: group, start: logData.time(), end: pair.time() };
   }
   var transmissions = rawTimeline.map(pairMessageDepartureAndArrival).filter(utils.notNull);
 

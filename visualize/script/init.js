@@ -10,8 +10,9 @@ var visualizationController;
 
 require.config({
   paths: {
-    jquery: 'https://code.jquery.com/jquery-1.11.3.min',
-    vis:    'https://cdnjs.cloudflare.com/ajax/libs/vis/4.2.0/vis.min',
+    jquery:   'https://code.jquery.com/jquery-1.11.3.min',
+    jqueryui: 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min',
+    vis:      'https://cdnjs.cloudflare.com/ajax/libs/vis/4.2.0/vis.min',
   },
 });
 

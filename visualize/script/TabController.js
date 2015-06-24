@@ -1,8 +1,9 @@
 'use strict';
 
 define([
-  'jquery'
-], function($) {
+  'jquery',
+  'jqueryui'
+], function($, ui) {
 
 console.log("TabController module loaded");
 
@@ -15,6 +16,7 @@ TabController.prototype.initialize = function() {
   var that = this;
   this._config.getGraphButtonElement().click(function() { that.setGraphTab(); });
   this._config.getTimelineButtonElement().click(function() { that.setTimelineTab(); });
+  this._config.getTabNavElement().draggable();
 }
 
 TabController.prototype.setGraphTab = function() {

@@ -18,6 +18,7 @@ function Config() {
   this._graphTabId       = 'graph-tab';
   this._timelineTabId    = 'timeline-tab';
   this._activeTabClass   = 'active-tab';
+  this._tabNavTag        = 'nav';
   this._graphButtonId    = 'set-graph';
   this._timelineButtonId = 'set-timeline';
 
@@ -49,6 +50,9 @@ Config.prototype.getTimelineTabElement = function() { return ofId(this._timeline
 
 Config.prototype.getActiveTabClass   = function() { return this._activeTabClass; }
 Config.prototype.getActiveTabElement = function() { return ofClass(this._activeTabClass); }
+
+Config.prototype.getTabNavTag     = function() { return this._tabNavTag; }
+Config.prototype.getTabNavElement = function() { return $(this._tabNavTag); }
 
 Config.prototype.getGraphButtonId      = function() { return this._graphButtonId; }
 Config.prototype.getGraphButtonElement = function() { return ofId(this._graphButtonId); }

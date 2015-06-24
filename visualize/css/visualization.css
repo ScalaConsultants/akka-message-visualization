@@ -10,6 +10,7 @@ html, body {
   background-color: darkgrey;
   height: 100%;
   width:  100%;
+  overflow: hidden;
 }
 
 /* tabs */
@@ -43,7 +44,7 @@ nav ul {
 
 /* single tab */
 
-article, h1 {
+article {
   height: 100%;
   overflow: hidden;
   width: 66%;
@@ -55,9 +56,9 @@ aside {
   width: 33%;
 }
 
-header, h1, aside > p {
+header, aside > p {
   height:        10%;
-  min-height:    50px;
+  min-height:    70px;
   text-align:    center;
 }
 
@@ -69,11 +70,13 @@ header, section {
   width: 100%%;
 }
 
-h1 {
-  position: absolute;
+h1, h2 {
+  font-size: 20pt;
   margin: 0;
+  padding: 0;
+  width: 100%;
 }
-
+h2 { font-size: 16pt; }
 
 section, aside > ol {
   background-color: #eee;
