@@ -1,16 +1,15 @@
 'use strict';
 
 define([
-  'JsonLogFetcher',
   'LogData',
   'GraphFactory'
-], function(JsonLogFetcher, LogData, GraphFactory) {
+], function(LogData, GraphFactory) {
 
 console.log("GraphController module loaded");
 
-function GraphController(config) {
+function GraphController(config, fetcher) {
   this._config  = config;
-  this._fetcher = null;
+  this._fetcher = fetcher;
   this._factory = null;
   this._state   = null;
 }
@@ -44,20 +43,6 @@ GraphController.prototype.moveBackward = function(backwardedCallback) {
   }
 }
 
-GraphController.prototype._fetchJsonLogThenInitializeFactoryAndGraph = function(graphStartedCallback) {
-  if (this._fetcher == null) {
-    console.log("No fetcher initialized - creating one now")
-    this._fetcher = new JsonLogFetcher(this._config.getInputFileName());
-  }
-  var that = this;
-  function onDataFetched(jsonArray) {
-    console.log("Data fetched successfully");
-    that._initiateFactoryAndGraph(jsonArray, graphStartedCallback);
-  }
-  console.log("Ordering data fetch");
-  this._fetcher.fetchData(onDataFetched);
-}
-
 GraphController.prototype._initiateFactoryAndGraph = function(jsonArray, graphStartedCallback) {
   console.log("Initializing GraphFactory");
   var timeline  = jsonArray.map(function(json) { return new LogData(json); });
@@ -74,13 +59,12 @@ GraphController.prototype._initiateGraph = function(graphStartedCallback) {
 
 GraphController.prototype._startGraph = function(graphStartedCallback) {
   console.log("Attempt to initialize graph");
-  if (this._factory == null) {
-    console.log("GraphFactory not initialized - need to fetch data");
-    this._fetchJsonLogThenInitializeFactoryAndGraph(graphStartedCallback);
-  } else {
-    console.log("GraphFactory initialized - passing control to GraphFactory");
-    this._initiateGraph(graphStartedCallback);
+  var that = this;
+  function onDataFetched(jsonArray) {
+    console.log("Data fetched successfully");
+    that._initiateFactoryAndGraph(jsonArray, graphStartedCallback);
   }
+  this._fetcher.fetchData(onDataFetched);
 }
 
 return GraphController;

@@ -2,8 +2,10 @@
 
 // for debugging
 var config;
+var fetcher;
 var tabController;
 var graphController;
+var timelineController;
 var visualizationController;
 
 require.config({
@@ -16,18 +18,22 @@ require.config({
 require([
   'jquery',
   'Config',
+  'JsonLogFetcher',
   'TabController',
   'GraphController',
+  'TimelineController',
   'VisualizationController'
-], function($, Config, TabController, GraphController, VisualizationController) {
+], function($, Config, JsonLogFetcher, TabController, GraphController, TimelineController, VisualizationController) {
 
 console.log("init module loaded");
 
 function onDocumentReady() {
-  config = new Config();
-  tabController = new TabController(config);
-  graphController = new GraphController(config);
-  visualizationController = new VisualizationController(config, tabController, graphController);
+  config                  = new Config();
+  fetcher                 = new JsonLogFetcher(config.getInputFileName());
+  tabController           = new TabController(config, fetcher);
+  graphController         = new GraphController(config, fetcher);
+  timelineController      = new TimelineController(config, fetcher);
+  visualizationController = new VisualizationController(config, tabController, graphController, timelineController);
   visualizationController.initialize();
 }
 

@@ -7,21 +7,24 @@ define([
 
 console.log("VisualizationController module loaded");
 
-function VisualizationController(config, tabController, graphController) {
-  this._config          = config;
-  this._tabController   = tabController;
-  this._graphController = graphController;
+function VisualizationController(config, tabController, graphController, timelineController) {
+  this._config             = config;
+  this._tabController      = tabController;
+  this._graphController    = graphController;
+  this._timelineController = timelineController;
   this._updateInterface(graphController);
 }
 
 VisualizationController.prototype.initialize = function() {
-  this._tabController.initialize();
+  var that = this;
+  this._tabController.initialize(that);
   this.startAnew();
 }
 
 VisualizationController.prototype.startAnew = function() {
   var that = this;
-  this._graphController.startAnew(function(c) { that._onStartedAnew(c) });
+  this._graphController.startAnew(function(c) { that._onGraphStartedAnew(c) });
+  this._timelineController.startAnew(function(c) { that._onTimelineStartedAnew(c); });
 }
 
 VisualizationController.prototype.moveForward = function() {
@@ -40,19 +43,31 @@ VisualizationController.prototype.moveBackward = function() {
   }
 }
 
-VisualizationController.prototype._onStartedAnew = function(graphController) {
-  console.log("Loading timeline into navigation");
-  this._config.getLogContainerElement().empty();
+VisualizationController.prototype._onGraphStartedAnew = function(graphController) {
+  console.log("Loading graph's log into navigation");
+  this._config.getGraphLogElement().empty();
 
   var timeline = graphController.timeline();
   for (var index in timeline) {
     var id    = this._logToId(timeline[index]);
     var value = JSON.stringify(timeline[index].json());
-    var child = '<' + this._config.getLogTag() + ' id="' + id + '">' + value + '</' + this._config.getLogTag() + '.>';
-    this._config.getLogContainerElement().append(child);
+    var child = '<' + this._config.getLogTag() + ' id="' + id + '">' + value + '</' + this._config.getLogTag() + '>';
+    this._config.getGraphLogElement().append(child);
   }
 
   this._updateInterface(graphController);
+}
+
+VisualizationController.prototype._onTimelineStartedAnew = function(timelineController) {
+  console.log("Loading timeline's log into navigation");
+  this._config.getTimelineLogElement().empty();
+
+  var timeline = timelineController.timeline();
+  for (var index in timeline) {
+    var value = JSON.stringify(timeline[index].json());
+    var child = '<' + this._config.getLogTag() + '>' + value + '</' + this._config.getLogTag() + '>';
+    this._config.getTimelineLogElement().append(child);
+  }
 }
 
 VisualizationController.prototype._onMoved = function(graphController, currentPosition) {
