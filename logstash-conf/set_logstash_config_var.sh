@@ -8,10 +8,13 @@ read -d '' logstash_config <<- CONFIG
     grok { match => [
       "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Created: %{NOTSPACE:created_class}:%{NUMBER:created_hash}",
       "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Stopped: %{NOTSPACE:stopped_class}:%{NUMBER:stopped_hash}",
-      "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg %{NUMBER:transmission} Received: %{NOTSPACE:receiver_class}:%{NUMBER:receiver_hash} <- %{NOTSPACE:message_class}:%{NUMBER:message_hash}",
-      "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} - Msg %{NUMBER:transmission} Sent: %{NOTSPACE:sender_class}:%{NUMBER:sender_hash} -> %{NOTSPACE:message_class}:%{NUMBER:message_hash}"
+      "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} -! Msg %{NUMBER:transmission} Received: %{NOTSPACE:receiver_class}:%{NUMBER:receiver_hash} <- %{NOTSPACE:message_class}:%{NUMBER:message_hash}",
+      "message", "\\\[DEBUG\\\] %{TIMESTAMP_ISO8601:time} -! Msg %{NUMBER:transmission} Sent: %{NOTSPACE:sender_class}:%{NUMBER:sender_hash} -> %{NOTSPACE:message_class}:%{NUMBER:message_hash}"
     ] }
-    mutate { remove_field => ["message","@version","@timestamp","host","path","_grokparsefailure"] }
+    mutate { remove_field => ["message","@version","@timestamp","host","path"] }
+    if "_grokparsefailure" in [tags] {
+      drop { }
+    }
   }
 
   # Output results
