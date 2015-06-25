@@ -112,7 +112,6 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
          concat(actorsWithStoppingOnly).
          concat(messagesWithDepartureAndMaybeArrival).
          concat(messagesWithArrivalOnly);
-         
 
   var container = document.getElementById(this._config.getTimelineId());
   var options = {};

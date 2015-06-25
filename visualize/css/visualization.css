@@ -102,3 +102,7 @@ aside > ol li {
 .current-log {
   background-color: #d0d0d0;
 }
+
+#messages-timeline {
+    overflow-y: scroll;
+}
