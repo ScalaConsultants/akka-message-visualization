@@ -6,6 +6,7 @@ define([
 
 function logDo(description)   { console.log("Perform: " + description); }
 function logUndo(description) { console.log("Undo: " + description); }
+function generateRandomId()   { return Math.random().toString(36).substr(2); }
 
 function createActorActionConfiguration() {
   var node        = this.logData().createNode();
@@ -28,6 +29,7 @@ function messageReceivedActionConfiguration() {
   var state     = this.state();
   var receiver  = logData.createNode();
   var messageId = logData.createMessageId();
+  var edgeLabel = logData.createMessageLabel();
 
   function containsSender(j) { return j.containsSender(); }
 
@@ -42,47 +44,74 @@ function messageReceivedActionConfiguration() {
                                   filter(currentlyExists).
                                   filter(containsMessage).
                                   filter(sameMessageId)[0];
-  if (logData2 == null) {
-    console.error("Receiver " + receiver.id + "couldn't be matched with a sender for " + messageId);
+
+  var sender      = null;
+  var description = null;
+  var confirmedId = null;
+  var incomplete  = null;
+  if (logData2 != null) {
+    var currentEdges = state.currentEdges();
+    function currentlyUsed(obj) { return currentEdges.indexOf(obj.inner) >= 0; }
+    function sameOuterMessageId(obj) { return messageId === obj.outer; }
+    var unconfirmedMessagesOfId = state.unconfirmed().filter(currentlyUsed).filter(sameOuterMessageId);
+
+    sender      = logData2.createNode();
+    description = logData.time() + ": Received message from :" + sender.id + " to: " + receiver.id;
+    if (unconfirmedMessagesOfId[0] != null)
+      confirmedId = unconfirmedMessagesOfId.shift();
+    incomplete  = false;
+  } else {
+    sender = {
+      id:    generateRandomId(),
+      label: "unknown sender"
+    };
+    description = logData.time() + ": Received message to: " + receiver.id;
+    confirmedId = { inner: generateRandomId(), outer: messageId };
+    incomplete  = true;
+  }
+
+  if (confirmedId == null) {
+    console.error("Couldn't find edge to update");
     this.setForward(function() {});
     this.setBackward(function() {});
     return;
   }
 
-  var currentEdges = state.currentEdges();
-  function currentlyUsed(obj) { return currentEdges.indexOf(obj.inner) >= 0; }
-
-  function sameOuterMessageId(obj) { return messageId === obj.outer; }
-
-  var unconfirmedMessagesOfId = state.unconfirmed().filter(currentlyUsed).filter(sameOuterMessageId);
-  if (unconfirmedMessagesOfId[0] != null) {
-    var sender      = logData2.createNode();
-    var description = logData.time() + ": Received message from :" + sender.id + " to: " + receiver.id;
-    var confirmedId = unconfirmedMessagesOfId.shift();
-
-    var that = this;
-    this.setForward(function() {
-      logDo(description);
+  var that = this;
+  this.setForward(function() {
+    logDo(description);
+    if (incomplete) {
+      state.addNode(sender);
+      state.addEdge({
+        id:    confirmedId.inner,
+        from:  sender.id,
+        to:    receiver.id,
+        label: edgeLabel,
+        color: "green"
+      });
+    } else {
       state.confirm(confirmedId);
       state.updateEdge(confirmedId.inner, { color: "green" });
-    });
+    }
+  });
 
-    this.setBackward(function() {
-      logUndo(description);
-      state.addUnconfirmed(confirmedId);
+  this.setBackward(function() {
+    logUndo(description);
+    if (incomplete) {
+      state.removeEdge({ id: confirmedId.inner });
+      state.removeNode(sender);
+    } else {
       state.updateEdge(confirmedId.inner, { color: "red" });
-    });
+      state.addUnconfirmed(confirmedId);
+    }
+  });
 
-    var confirmedMessageRemovalAction = new GraphAction(state, logData).setConfigureActions(removeConfirmedMessage);
-    confirmedMessageRemovalAction.meta().sender      = sender;
-    confirmedMessageRemovalAction.meta().receiver    = receiver;
-    state.enqueForward(confirmedMessageRemovalAction);
-    confirmedMessageRemovalAction.meta().confirmedId = confirmedId;
-  } else {
-    console.error("Couldn't match received message " + messageId);
-    this.setForward(function() {});
-    this.setBackward(function() {});
-  }
+  var confirmedMessageRemovalAction = new GraphAction(state, logData).setConfigureActions(removeConfirmedMessage);
+  confirmedMessageRemovalAction.meta().sender      = sender;
+  confirmedMessageRemovalAction.meta().receiver    = receiver;
+  confirmedMessageRemovalAction.meta().confirmedId = confirmedId;
+  confirmedMessageRemovalAction.meta().incomplete  = incomplete;
+  state.enqueForward(confirmedMessageRemovalAction);
 }
 
 function removeConfirmedMessage() {
@@ -93,15 +122,22 @@ function removeConfirmedMessage() {
   var sender      = this.meta().sender;
   var receiver    = this.meta().receiver;
   var confirmedId = this.meta().confirmedId;
-  var description = logData.time() + ": Removing confirmed message from :" + sender.id + " to: " + receiver.id;
+  var incomplete  = this.meta().incomplete;
+  var description = incomplete ?
+    (logData.time() + ": Removing confirmed message to: " + receiver.id) :
+    (logData.time() + ": Removing confirmed message from :" + sender.id + " to: " + receiver.id);
 
   this.setForward(function() {
     logDo(description);
     state.removeEdge({ id: confirmedId.inner });
+    if (incomplete)
+      state.removeNode(sender);
   });
 
   this.setBackward(function() {
     logUndo(description);
+    if (incomplete)
+      state.addNode(sender);
     state.addEdge({
       id:    confirmedId.inner,
       from:  sender.id,
@@ -113,11 +149,13 @@ function removeConfirmedMessage() {
 }
 
 function messageSentActionConfiguration() {
-  var logData   = this.logData();
-  var state     = this.state();
-  var sender    = logData.createNode();
-  var messageId = logData.createMessageId();
-  var edgeLabel = logData.createMessageLabel();
+  var logData     = this.logData();
+  var state       = this.state();
+  var sender      = logData.createNode();
+  var messageId   = logData.createMessageId();
+  var edgeLabel   = logData.createMessageLabel();
+  var innerId     = generateRandomId();
+  var unconfirmed = { inner: innerId, outer: messageId };
 
   function containsReceiver(j) { return j.containsReceiver(); }
 
@@ -128,24 +166,33 @@ function messageSentActionConfiguration() {
 
   function sameMessageId(j) { return messageId === j.createMessageId(); }
 
+
   var logData2 = state.timeline().filter(containsReceiver).
                                   filter(currentlyExists).
                                   filter(containsMessage).
                                   filter(sameMessageId)[0];
-  if (logData2 == null) {
-    console.error("Sender " + sender.id + " couldn't be matched with a receiver for " + messageId);
-    this.setForward(function() {});
-    this.setBackward(function() {});
-    return;
-  }
 
-  var receiver    = logData2.createNode();
-  var description = logData.time() + ": Sending message from :" + sender.id + " to: " + receiver.id;
-  var innerId     = Math.random().toString(36).substr(2);
-  var unconfirmed = { inner: innerId, outer: messageId };
+  var receiver    = null;
+  var description = null;
+  var incomplete  = null;
+
+  if (logData2 != null) {
+    receiver    = logData2.createNode();
+    description = logData.time() + ": Sending message from :" + sender.id + " to: " + receiver.id;
+    incomplete  = false;
+  } else {
+    receiver    = {
+      id:    generateRandomId(),
+      label: "unknown receiver"
+    };
+    description = logData.time() + ": Sending message from :" + sender.id;
+    incomplete  = true;
+  }
 
   this.setForward(function() {
     logDo(description);
+    if (incomplete)
+      state.addNode(receiver);
     state.addEdge({
       id:    innerId,
       from:  sender.id,
@@ -159,6 +206,8 @@ function messageSentActionConfiguration() {
   this.setBackward(function() {
     logUndo(description);
     state.removeEdge({ id: innerId });
+    if (incomplete)
+      removeNode(receiver);
     state.confirm(unconfirmed);
   });
 }

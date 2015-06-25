@@ -49,8 +49,8 @@ GraphState.prototype.updateNode     = function(id, updatedProperties) {
   this._data.nodes.update(updateObj);
 }
 
-GraphState.prototype.confirm        = function(idPair) { utils.remove(this._unconfirmed, idPair); }
-GraphState.prototype.addUnconfirmed = function(idPair) { this._unconfirmed.push(idPair); }
+GraphState.prototype.confirm        = function(idPair) { if (idPair != null) utils.remove(this._unconfirmed, idPair); }
+GraphState.prototype.addUnconfirmed = function(idPair) { if (idPair != null) this._unconfirmed.push(idPair); }
 GraphState.prototype.unconfirmed    = function() { return this._unconfirmed; }
 
 GraphState.prototype.canForward     = function() { return this._forwardQueue.length > 0; }
@@ -89,6 +89,7 @@ GraphState.prototype._initializeData = function (timeline) {
 
   function notCreated(logData, index, array) {
     var actor = logData.createNode();
+    function sameObj(actor2) { return actor.id == actor2.id; }
     function sameObj(actor2) { return actor.id == actor2.id; }
     return (actor == null || created.filter(sameObj).length > 0) ? null : actor;
   }
