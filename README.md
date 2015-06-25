@@ -117,9 +117,28 @@ directory and run command:
 
     $ python -m SimpleHTTPServer
     
+or
+
+    $ ./run_localhost
+    
 It will run simple client allowing you to access content of the folder through `localhost:8000`:
 
     http://localhost:8000/index.html
+    
+## TL;DR for running example
+
+    # open console #1
+    cd akka-message-visualization/
+    source ./logstash-conf/set_logstach_config_var.sh
+    logstash -e $logstash_config
+    # open console #2 without closing console #1
+    cd akka-message-visualization/
+    sbt testapp/run
+    sbt testapp/run
+    # Ctrl+C on console #1 to quit logstash
+    cd visualize/
+    ./run_localhost
+    # open http://localhost:8000 in your browser
     
 ## Design of PoC, limitations and conclusions
 
