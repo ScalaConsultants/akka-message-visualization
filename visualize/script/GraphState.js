@@ -11,7 +11,7 @@ function GraphState(logDataTimeline, graphElementDomId) {
   this._timeline  = logDataTimeline; // log in form of sorted list of LogData objects
 
   this._container = document.getElementById(graphElementDomId);
-  this._data      = { nodes: new vis.DataSet([]), edges: new vis.DataSet([]) };
+  this._data      = this._initializeData(logDataTimeline);
   this._options   = {
     edges: {
       arrows: {
@@ -77,8 +77,30 @@ GraphState.prototype.moveBackward   = function() {
   if (this.canBackward()) {
     var action = this.dequeBackward();
     action.actBackward();
+  // TODO: handle received without send event
     this.enqueForward(action);
   }
+}
+
+GraphState.prototype._initializeData = function (timeline) {
+  function containsCreated(logData) { return logData.containsCreated(); }
+  function toNode(logData) { return logData.createNode(); }
+  var created = timeline.filter(containsCreated).map(toNode).filter(utils.notNull);
+
+  function notCreated(logData, index, array) {
+    var actor = logData.createNode();
+    function sameObj(actor2) { return actor.id == actor2.id; }
+    return (actor == null || created.filter(sameObj).length > 0) ? null : actor;
+  }
+  function uniqueness(actor, index, array) {
+    function sameActor(actor2) { return JSON.stringify(actor) == JSON.stringify(actor2); }
+    return array.filter(sameActor)[0] == actor;
+  }
+  var nodes = timeline.map(notCreated).filter(utils.notNull).filter(uniqueness);
+
+  var edges = [];
+
+  return { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
 }
 
 return GraphState;
