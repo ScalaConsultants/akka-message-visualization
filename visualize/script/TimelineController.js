@@ -28,41 +28,91 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
   this._rawTimeline = jsonArray.map(function(json) { return new LogData(json); });
   var rawTimeline = this._rawTimeline;
 
+  var noStart = rawTimeline[0];
+  var noEnd   = rawTimeline[rawTimeline.length - 1];
+
   var groups = [];
 
-  function pairActorCreationAndStopping(logData) {
+  function actorWithCreationAndMaybeStopping(logData) {
     if (!logData.containsCreated())
       return null;
+
     var created = logData.createNode();
-    function isPair(logData2) { return logData2.containsStopped() && logData2.createNode().id === created.id; }
-    var pair = rawTimeline.filter(isPair)[0];
-    if (pair == null)
-      return null;
     var label = "Actor: "+created.id;
     var group = groups.length;
     groups.push({ id: group, content: label });
-    return { content: created.id, group: group, start: logData.time(), end: pair.time() };
-  }
-  var lifecycle = rawTimeline.map(pairActorCreationAndStopping).filter(utils.notNull);
 
-  function pairMessageDepartureAndArrival(logData) {
+    function isPair(logData2) { return logData2.containsStopped() && logData2.createNode().id === created.id; }
+    var pair = rawTimeline.filter(isPair)[0];
+    return { content: created.id, group: group, start: logData.time(), end: ((pair != null) ? pair : noEnd).time() };
+  }
+  var actorsWithCreationAndMaybeStopping = rawTimeline.map(actorWithCreationAndMaybeStopping).filter(utils.notNull);
+
+  function actorWithStoppingOnly(logData) {
+    if (!logData.containsStopped())
+      return null;
+
+    var stopped = logData.createNode();
+    var group   = groups.length;
+    var label   = "Actor: "+stopped.id;
+
+    function isPair(logData2) { return logData2.containsCreated() && logData2.createNode().id === stopped.id; }
+    var pair = rawTimeline.filter(isPair)[0];
+    if (pair != null)
+      return null;
+
+    groups.push({ id: group, content: label });
+    return { content: stopped.id, group: group, start: noStart.time(), end: logData.time() };
+  }
+  var actorsWithStoppingOnly = rawTimeline.map(actorWithStoppingOnly).filter(utils.notNull);
+
+  function messageWithDepartureAndMaybeArrival(logData) {
     if (!logData.containsSender())
       return null;
-    var messageId = logData.createMessageId();
-    function isPair(logData2) { return logData2.containsReceiver() && logData2.createMessageId() === messageId; }
-    var pair = rawTimeline.filter(isPair)[0];
-    if (pair == null)
-      return null;
-    var sender   = logData.createNode().label;
-    var receiver = pair.createNode().label;
-    var label    = "Msg: "+pair.createMessageLabel()+"<br/>  from "+sender+"<br/>  to "+receiver;
-    var group    = groups.length;
-    groups.push({ id: group, content: label });
-    return { content: pair.createMessageLabel(), group: group, start: logData.time(), end: pair.time() };
-  }
-  var transmissions = rawTimeline.map(pairMessageDepartureAndArrival).filter(utils.notNull);
 
-  var rawData = lifecycle.concat(transmissions);
+    var messageId = logData.createMessageId();
+    var sender    = logData.createNode().label;
+    var group     = groups.length;
+    var content   = logData.createMessageLabel();
+
+    function isPair(logData2) { return logData2.containsReceiver() && logData2.createMessageId() === messageId; }
+    var pair  = rawTimeline.filter(isPair)[0];
+    var label = null;
+    if (pair != null) {
+      var receiver = pair.createNode().label;
+      label = "Msg: "+pair.createMessageLabel()+"<br/>  from "+sender+"<br/>  to "+receiver;
+    } else {
+      label = "Msg: "+logData.createMessageLabel()+"<br/>  from "+sender;
+    }
+    groups.push({ id: group, content: label });
+    return { content: content, group: group, start: logData.time(), end: ((pair != null) ? pair : noEnd).time() };
+  }
+  var messagesWithDepartureAndMaybeArrival = rawTimeline.map(messageWithDepartureAndMaybeArrival).filter(utils.notNull);
+
+  function messageWithArrivalOnly(logData) {
+    if (!logData.containsReceiver())
+      return null;
+
+    var messageId = logData.createMessageId();
+    var receiver  = logData.createNode().label;
+    var group     = groups.length;
+
+    function isPair(logData2) { return logData2.containsSender() && logData2.createMessageId() === messageId; }
+    var pair = rawTimeline.filter(isPair)[0];
+    if (pair != null)
+      return null;
+
+    var label    = "Msg: "+logData.createMessageLabel()+"<br/>  to "+receiver;
+    groups.push({ id: group, content: label });
+    return { content: logData.createMessageLabel(), group: group, start: noStart.time(), end: logData.time() };
+  }
+  var messagesWithArrivalOnly = rawTimeline.map(messageWithArrivalOnly).filter(utils.notNull);
+
+  var rawData = actorsWithCreationAndMaybeStopping.
+         concat(actorsWithStoppingOnly).
+         concat(messagesWithDepartureAndMaybeArrival).
+         concat(messagesWithArrivalOnly);
+         
 
   var container = document.getElementById(this._config.getTimelineId());
   var options = {};
