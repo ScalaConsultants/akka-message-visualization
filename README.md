@@ -12,7 +12,15 @@ For quick example go to TL;DR section.
 Simply call:
 
     $ sbt testapp/run
-    
+
+It is a ping-pong application where `PingActor` and `PongActor` exchange messages. After 3rd `PongMessage` system stops.
+
+Another example is:
+
+   $ sbt randcalc/run
+   
+There `Parent` queries its 4 children every 1 second, and they respond to it with 1 second delay.
+
 ## Requirements
 
 We need to configure project to make use of our small library. Enable extension in `application.conf`:
@@ -140,7 +148,7 @@ It will run simple client allowing you to access content of the folder through `
     cd akka-message-visualization/
     sbt testapp/run
     sbt testapp/run
-    # Ctrl+C on console #1 to quit logstash
+    # Ctrl+C on console #1 to quit logstash and force it to flush data to data.txt
     cd visualize/
     ./run_localhost.sh
     # open http://localhost:8000 in your browser
@@ -148,7 +156,7 @@ It will run simple client allowing you to access content of the folder through `
 or if you're lazy
 
     cd akka-message-visualization/
-    cp example/data.txt visualize/data.txt
+    cp example/testapp.txt visualize/data.txt
     cd visualize/
     ./run_localhost.sh
     

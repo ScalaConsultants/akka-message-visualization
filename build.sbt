@@ -13,9 +13,12 @@ ivyScala := ivyScala.value map {
 }
 
 lazy val root = project.in(file("."))
-  .aggregate(logger, testapp)
+  .aggregate(logger, testapp, randcalc)
 
 lazy val logger = project
 
 lazy val testapp = project
+  .dependsOn(logger)
+
+lazy val randcalc = project
   .dependsOn(logger)
