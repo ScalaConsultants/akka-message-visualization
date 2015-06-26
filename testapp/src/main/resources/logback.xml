@@ -2,7 +2,7 @@
 <configuration>
   <appender name="monitorLogSTDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>[%-5level] %date{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC} - %msg%n</pattern>
+      <pattern>[%-5level] %msg%n</pattern>
     </encoder>
   </appender>
 
@@ -16,7 +16,7 @@
       <maxFileSize>5MB</maxFileSize>
     </triggeringPolicy>
     <encoder>
-      <pattern>[%-5level] %date{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC} - %msg%n</pattern>
+      <pattern>[%-5level] %msg%n</pattern>
     </encoder>
   </appender>
 

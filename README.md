@@ -27,7 +27,7 @@ and make sure that logging format in `logback.xml` follow the defined pattern:
       ...
       <appender name="SomeName" class=...>
         <encoder>
-          <pattern>[%-5level] %date{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC} - %msg%n</pattern>
+          <pattern>[%-5level] %msg%n</pattern>
         </encoder>
         ...
       </appender>
