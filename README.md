@@ -164,6 +164,16 @@ highlighted on raw JSON log on the right. Meaning of each animation:
     * sender was stopped before message arrived,
     * sender wasn't correctly configured.
 
+Events occurring in the same millisecond will be displayed on the following order:
+ 
+ * created actors,
+ * sent messages,
+ * received messages,
+ * stopped actors
+ 
+to ensure that graph can be correctly displayed. Occasionally it can make graph more difficult to read and one have to
+be aware of that limitation.
+
 Timeline simply shows duration of either an actor's life or a message's transfer duration. Usually it is very short for
 messages and much longer for actors. However, if beginning of an interval starts at timeline's beginning (earliest
 event) or timline's end (latest event) it means that complete knowledge wasn't available within logs:
