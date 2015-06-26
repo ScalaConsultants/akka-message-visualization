@@ -1,6 +1,11 @@
 # Akka Message Visualization
 
-Simple extension to Akka producing logs which would be used to extract some useful data using logstash.
+Proof of concept of messaging within Akka visualization.
+
+Currently it's a simple extension to Akka, producing logs which in turn would be used to extract some useful data with
+logstash.
+
+For quick example go to TL;DR section. 
 
 ## Running example project
 
@@ -139,6 +144,13 @@ It will run simple client allowing you to access content of the folder through `
     cd visualize/
     ./run_localhost.sh
     # open http://localhost:8000 in your browser
+    
+or if you're lazy
+
+    cd akka-message-visualization/
+    cp example/data.txt visualize/data.txt
+    cd visualize/
+    ./run_localhost.sh
     
 ## Design of PoC, limitations and conclusions
 
