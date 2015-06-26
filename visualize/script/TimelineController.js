@@ -25,7 +25,7 @@ TimelineController.prototype.startAnew = function(timelineStartedCallback) {
 
 TimelineController.prototype._initiateTimeline = function(jsonArray, timelineStartedCallback) {
   console.log("Initializing Timeline");
-  this._rawTimeline = jsonArray.map(function(json) { return new LogData(json); });
+  this._rawTimeline = utils.logSort(jsonArray.map(function(json) { return new LogData(json); }));
   var rawTimeline = this._rawTimeline;
 
   var noStart = rawTimeline[0];

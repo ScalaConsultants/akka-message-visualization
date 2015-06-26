@@ -31,6 +31,7 @@ GraphState.prototype.destroy        = function() { this._network.destroy(); }
 
 GraphState.prototype.timeline       = function() { return this._timeline; }
 
+GraphState.prototype.getEdge        = function(id)   { return this._data.edges.get(id); }
 GraphState.prototype.addEdge        = function(edge) { return this._data.edges.add(edge); }
 GraphState.prototype.removeEdge     = function(edge) { this._data.edges.remove(edge); }
 GraphState.prototype.currentEdges   = function() { return this._data.edges.getIds(); }
@@ -40,6 +41,7 @@ GraphState.prototype.updateEdge     = function(id, updatedProperties) {
   this._data.edges.update(updateObj);
 }
 
+GraphState.prototype.getNode        = function(id)   { return this._data.nodes.get(id); }
 GraphState.prototype.addNode        = function(node) { return this._data.nodes.add(node); }
 GraphState.prototype.removeNode     = function(node) { this._data.nodes.remove(node); }
 GraphState.prototype.currentNodes   = function() { return this._data.nodes.getIds(); }

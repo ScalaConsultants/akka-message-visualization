@@ -1,8 +1,12 @@
 'use strict';
 
 define([
+  'utils',
   'GraphAction'
-], function(GraphAction) {
+], function(utils, GraphAction) {
+
+var unknownReceiverPrefix = "unknown-at-sending-";
+var unknownSenderPrefix   = "unknown-at-receiving-";
 
 function logDo(description)   { console.log("Perform: " + description); }
 function logUndo(description) { console.log("Undo: " + description); }
@@ -25,6 +29,10 @@ function createActorActionConfiguration() {
 }
 
 function messageReceivedActionConfiguration() {
+  // TODO: handle case when received message was sent to restarted actor
+  // remove unknown node
+  // THEN ADD edge to new one
+
   var logData   = this.logData();
   var state     = this.state();
   var receiver  = logData.createNode();
@@ -62,7 +70,7 @@ function messageReceivedActionConfiguration() {
     incomplete  = false;
   } else {
     sender = {
-      id:    generateRandomId(),
+      id:    unknownSenderPrefix+generateRandomId(),
       label: "unknown sender"
     };
     description = logData.time() + ": Received message to: " + receiver.id;
@@ -78,9 +86,38 @@ function messageReceivedActionConfiguration() {
   }
 
   var that = this;
-  this.setForward(function() {
-    logDo(description);
-    if (incomplete) {
+
+  var wasRestarted = !incomplete && utils.startsWith(state.getEdge(confirmedId.inner).to, unknownReceiverPrefix);
+  if (wasRestarted) {
+    // node was restarted
+    var oldEdge = state.getEdge(confirmedId.inner);
+    var oldNode = state.getNode(oldEdge.to);
+    var newEdge = {
+      id:    generateRandomId(),
+      from:  sender.id,
+      to:    receiver.id,
+      label: edgeLabel,
+      color: "green"
+    };
+
+    this.setForward(function() {
+      state.removeEdge(oldEdge);
+      state.removeNode(oldNode);
+      state.addEdge(newEdge);
+    });
+
+    this.setBackward(function() {
+      state.removeEdge(newEdge);
+      state.addNode(oldNode);
+      state.addEdge(oldEdge);
+    });
+
+    confirmedId = { inner: newEdge.id, outer: messageId };
+  } else if (incomplete) {
+    // no sender known
+
+    this.setForward(function() {
+      logDo(description);
       state.addNode(sender);
       state.addEdge({
         id:    confirmedId.inner,
@@ -89,28 +126,37 @@ function messageReceivedActionConfiguration() {
         label: edgeLabel,
         color: "green"
       });
-    } else {
-      state.confirm(confirmedId);
-      state.updateEdge(confirmedId.inner, { color: "green" });
-    }
-  });
+    });
 
-  this.setBackward(function() {
-    logUndo(description);
-    if (incomplete) {
+    this.setBackward(function() {
+      logUndo(description);
       state.removeEdge({ id: confirmedId.inner });
       state.removeNode(sender);
-    } else {
+    });
+
+    return;
+  } else {
+    // regular case
+
+    this.setForward(function() {
+      logDo(description);
+      state.confirm(confirmedId);
+      state.updateEdge(confirmedId.inner, { color: "green" });
+    });
+
+    this.setBackward(function() {
+      logUndo(description);
       state.updateEdge(confirmedId.inner, { color: "red" });
       state.addUnconfirmed(confirmedId);
-    }
-  });
+    });
+  }
 
   var confirmedMessageRemovalAction = new GraphAction(state, logData).setConfigureActions(removeConfirmedMessage);
-  confirmedMessageRemovalAction.meta().sender      = sender;
-  confirmedMessageRemovalAction.meta().receiver    = receiver;
-  confirmedMessageRemovalAction.meta().confirmedId = confirmedId;
-  confirmedMessageRemovalAction.meta().incomplete  = incomplete;
+  confirmedMessageRemovalAction.meta().sender       = sender;
+  confirmedMessageRemovalAction.meta().receiver     = receiver;
+  confirmedMessageRemovalAction.meta().confirmedId  = confirmedId;
+  confirmedMessageRemovalAction.meta().incomplete   = incomplete;
+  confirmedMessageRemovalAction.meta().wasRestarted = wasRestarted;
   state.enqueForward(confirmedMessageRemovalAction);
 }
 
@@ -182,7 +228,7 @@ function messageSentActionConfiguration() {
     incomplete  = false;
   } else {
     receiver    = {
-      id:    generateRandomId(),
+      id:    unknownReceiverPrefix+generateRandomId(),
       label: "unknown receiver"
     };
     description = logData.time() + ": Sending message from :" + sender.id;
@@ -207,7 +253,7 @@ function messageSentActionConfiguration() {
     logUndo(description);
     state.removeEdge({ id: innerId });
     if (incomplete)
-      removeNode(receiver);
+      state.removeNode({ id: receiver.id });
     state.confirm(unconfirmed);
   });
 }
