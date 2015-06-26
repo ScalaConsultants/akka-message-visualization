@@ -1,6 +1,7 @@
 package io.scalac.amv.randcalc
 
-import akka.actor.{Cancellable, Actor, ActorLogging, Props}
+import akka.actor.SupervisorStrategy.Restart
+import akka.actor._
 import io.scalac.amv.monitor.ActorMonitor
 
 import scala.util.Random
@@ -15,6 +16,10 @@ class Parent extends Actor with ActorLogging with ActorMonitor {
 
   var counter   = 0
   val random    = new Random
+
+  override val supervisorStrategy = AllForOneStrategy(maxNrOfRetries = 1) {
+    case _: Exception => Restart
+  }
 
   def receive = monitorIncoming <-- {
     case Initialize =>

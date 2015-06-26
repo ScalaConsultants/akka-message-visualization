@@ -18,18 +18,8 @@ class Child extends Actor with ActorLogging with ActorMonitor {
   def receive = monitorIncoming <-- {
     case Parent.Calculate(x) =>
       log.info("In Child - received x to Calculate: {}", x)
-      schedule = context.system.scheduler.scheduleOnce(delay)(monitorOutgoing --> self ! DelayedResponse(x))
-
-    case DelayedResponse(x) =>
-      val result = if (x == 0) 0 else seed/x
-      log.info("In Child - calculation complete, responding")
-      monitorOutgoing --> context.parent ! Calculated(seed, x, result)
-  }
-
-  override def postStop() = {
-    super.postStop()
-    if (schedule != null)
-      schedule.cancel
+      Thread.sleep(1000)
+      monitorOutgoing --> sender() ! Calculated(seed, x, seed/x)
   }
 }
 

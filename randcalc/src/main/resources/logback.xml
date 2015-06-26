@@ -21,9 +21,11 @@
   </appender>
 
   <logger name="io.scalac.amv.extension" level="DEBUG">
-    <appender-ref ref="monitorLogSTDOUT" />
     <appender-ref ref="monitorLogFILE" />
   </logger>
 
-  <root level="OFF" />
+  <root level="INFO">
+    <appender-ref ref="monitorLogSTDOUT" />
+  </root>
+
 </configuration>
