@@ -86,12 +86,10 @@ LogData.prototype.createNode = function() {
   }
 
   var that = this;
-  return (clas && hash) ? { id: that._createId(clas, hash), label: that._createLabel(clas, hash) } : null;
+  return (clas && hash) ? { id: that._createId(clas, hash), label: that._createId(clas, hash) } : null;
 }
 
 LogData.prototype._createId = function(clas, hash) { return clas + '(' + hash + ')'; }
-
-LogData.prototype._createLabel = function(clas, hash) { return clas; }
 
 return LogData;
 });

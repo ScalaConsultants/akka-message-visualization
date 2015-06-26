@@ -29,10 +29,6 @@ function createActorActionConfiguration() {
 }
 
 function messageReceivedActionConfiguration() {
-  // TODO: handle case when received message was sent to restarted actor
-  // remove unknown node
-  // THEN ADD edge to new one
-
   var logData   = this.logData();
   var state     = this.state();
   var receiver  = logData.createNode();
