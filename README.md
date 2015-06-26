@@ -138,6 +138,46 @@ It will run simple client allowing you to access content of the folder through `
 
     http://localhost:8000/index.html
     
+## How to read visualization
+
+Visualization consists of two parts: interactive graph representing messaging within system over the time and timeline
+showing actors' lifespans and message transfer in time. Views can be switched using draggable button panel.
+ 
+
+Graph can be navigated in time using *Play next event* and *Undo last event* buttons. Last played event will be
+highlighted on raw JSON log on the right. Meaning of each animation:
+
+ * appearance of named node represents an actor's creation, similarly its disappearance mean that actor was stopped,
+ * appearance of red directed edge represent the event of a message's departure, once it reaches addressee arrow will
+   turn green and disappear in the next frame,
+ * appearance of *unknown receiver* node with red arrow indicates that message was sent but none of currently known
+   nodes ever reported that it arrived - it can happen when:
+    
+    * after message departure system was stopped,
+    * addressee was stopped before receiving the message - if actor was restarted and message reached it, then this node
+      will disappear once it reach the new addressee,
+    * receiver wasn't correctly configured,
+
+ * appearance of *unknown receiver* node indicates that message was sent by node that isn't on a list of known alive
+   nodes - this can happen when:
+   
+    * sender was stopped before message arrived,
+    * sender wasn't correctly configured.
+
+Timeline simply shows duration of either an actor's life or a message's transfer duration. Usually it is very short for
+messages and much longer for actors. However, if beginning of an interval starts at timeline's beginning (earliest
+event) or timline's end (latest event) it means that complete knowledge wasn't available within logs:
+
+ * actors with lifespan span starting in the beginning were either created as first actors within the system or were
+   assumed to live at the beginning of the recorded time frame. Similarly actors which intervals reach the end either
+     were stopped at the system shutdown or were alive at the end of recorded time frame,
+ * messages' transfers with unknown sending events are assumed to be sent before recording started and are displayed as
+   starting at the beginning of timeline. Similarly messages without receiving event are assumed to be still transferred
+   at the end of timeline.
+   
+Assuming that all actors are correctly configured *unknown receiver* and *unknown sender* nodes together with enormously
+long message transfers can be used to locate when some actors crashed and had to be stopped or restarted.
+
 ## TL;DR for running example
 
     # open console #1
