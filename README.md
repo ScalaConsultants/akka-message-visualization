@@ -5,7 +5,31 @@ Proof of concept of messaging within Akka visualization.
 Currently it's a simple extension to Akka, producing logs which in turn would be used to extract some useful data with
 logstash.
 
-For quick example go to TL;DR section. 
+For quick example read TL;DR section.
+
+## TL;DR for running example visualization
+
+    # open console #1
+    cd akka-message-visualization/
+    source ./logstash-conf/set_logstach_config_var.sh
+    touch ./logs/monitor.log
+    logstash -e $logstash_config
+    # open console #2 without closing console #1
+    cd akka-message-visualization/
+    sbt testapp/run   # for testapp visualization
+    sbt randcalc/run  # for randcalc visualization
+    # Ctrl+C on console #1 to quit logstash and force it to flush data to data.txt
+    cd visualize/
+    ./run_localhost.sh
+    # open http://localhost:8000 in your browser
+    
+or if you're lazy:
+
+    cd akka-message-visualization/
+    cp example/testapp.txt  visualize/data.txt  # for already processed testapp log
+    cp example/randcalc.txt visualize/data.txt  # for already processed randcalc log
+    cd visualize/
+    ./run_localhost.sh
 
 ## Running example project
 
@@ -17,11 +41,11 @@ It is a ping-pong application where `PingActor` and `PongActor` exchange message
 
 Another example is:
 
-   $ sbt randcalc/run
+    $ sbt randcalc/run
    
 There `Parent` queries its 4 children every 1 second, and they respond to it with 1 second delay.
 
-## Requirements
+## Requirements and configuration of any project
 
 We need to configure project to make use of our small library. Enable extension in `application.conf`:
 
@@ -82,7 +106,8 @@ be found in a `logstash-conf/process-message-logs.conf` file. Unfortunately logs
 
  * one config cannot reference other configurations,
  * variables or parameters cannot be passed into configs via command line,
- * and via environment variables either.
+ * and via environment variables either,
+ * observed files matched with wildcard (`logs/monitor*.log`) has to already exists when we start application.
  
 Because of that configs can only use absolute paths, so it is necessary to edit example config before one can run it
 (namely, the absolute path to the observed logs has to be set). Once configured we could start logstash process like
@@ -187,28 +212,6 @@ event) or timline's end (latest event) it means that complete knowledge wasn't a
    
 Assuming that all actors are correctly configured *unknown receiver* and *unknown sender* nodes together with enormously
 long message transfers can be used to locate when some actors crashed and had to be stopped or restarted.
-
-## TL;DR for running example
-
-    # open console #1
-    cd akka-message-visualization/
-    source ./logstash-conf/set_logstach_config_var.sh
-    logstash -e $logstash_config
-    # open console #2 without closing console #1
-    cd akka-message-visualization/
-    sbt testapp/run
-    sbt testapp/run
-    # Ctrl+C on console #1 to quit logstash and force it to flush data to data.txt
-    cd visualize/
-    ./run_localhost.sh
-    # open http://localhost:8000 in your browser
-    
-or if you're lazy
-
-    cd akka-message-visualization/
-    cp example/testapp.txt visualize/data.txt
-    cd visualize/
-    ./run_localhost.sh
     
 ## Design of PoC, limitations and conclusions
 
