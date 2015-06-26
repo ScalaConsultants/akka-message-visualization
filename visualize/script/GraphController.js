@@ -1,10 +1,9 @@
 'use strict';
 
 define([
-  'utils',
-  'LogData',
+  'LogDataListFactory',
   'GraphFactory'
-], function(utils, LogData, GraphFactory) {
+], function(LogDataListFactory, GraphFactory) {
 
 console.log("GraphController module loaded");
 
@@ -46,7 +45,7 @@ GraphController.prototype.moveBackward = function(backwardedCallback) {
 
 GraphController.prototype._initiateFactoryAndGraph = function(jsonArray, graphStartedCallback) {
   console.log("Initializing GraphFactory");
-  var timeline  = utils.logSort(jsonArray.map(function(json) { return new LogData(json); }));
+  var timeline  = new LogDataListFactory().create(jsonArray);
   this._factory = new GraphFactory(timeline, this._config.getGraphId());
   this._initiateGraph(graphStartedCallback);
 }

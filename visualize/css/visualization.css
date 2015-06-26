@@ -17,13 +17,12 @@ html, body {
 
 main {
   position: absolute;
-  z-index: -10;
+  visibility: hidden;
 }
 main.active-tab {
-  display: block;
   height: 100%;
   width: 100%;
-  z-index: 10;
+  visibility: visible;
 }
 
 nav {
@@ -103,6 +102,8 @@ aside > ol li {
   background-color: #d0d0d0;
 }
 
+/* timeline tab */
+
 #messages-timeline {
-    overflow-y: scroll;
+  overflow-y: scroll;
 }

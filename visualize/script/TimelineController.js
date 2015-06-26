@@ -3,8 +3,8 @@
 define([
   'utils',
   'vis',
-  'LogData'
-], function(utils, vis, LogData) {
+  'LogDataListFactory'
+], function(utils, vis, LogDataListFactory) {
 
 console.log("TimelineController module loaded");
 
@@ -25,7 +25,7 @@ TimelineController.prototype.startAnew = function(timelineStartedCallback) {
 
 TimelineController.prototype._initiateTimeline = function(jsonArray, timelineStartedCallback) {
   console.log("Initializing Timeline");
-  this._rawTimeline = utils.logSort(jsonArray.map(function(json) { return new LogData(json); }));
+  this._rawTimeline = new LogDataListFactory().create(jsonArray);
   var rawTimeline = this._rawTimeline;
 
   var noStart = rawTimeline[0];
@@ -80,7 +80,7 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
     var label = null;
     if (pair != null) {
       var receiver = pair.createNode().label;
-      label = "Msg: "+pair.createMessageLabel()+"<br/>  from "+sender+"<br/>  to "+receiver;
+      label = "Msg: "+logData.createMessageLabel()+"<br/>  from "+sender+"<br/>  to "+receiver;
     } else {
       label = "Msg: "+logData.createMessageLabel()+"<br/>  from "+sender;
     }
