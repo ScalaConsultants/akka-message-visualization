@@ -137,7 +137,7 @@ It will run simple client allowing you to access content of the folder through `
     sbt testapp/run
     # Ctrl+C on console #1 to quit logstash
     cd visualize/
-    ./run_localhost
+    ./run_localhost.sh
     # open http://localhost:8000 in your browser
     
 ## Design of PoC, limitations and conclusions
