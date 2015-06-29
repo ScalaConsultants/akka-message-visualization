@@ -7,6 +7,7 @@ define([
 
 var unknownReceiverPrefix = "unknown-at-sending-";
 var unknownSenderPrefix   = "unknown-at-receiving-";
+var stoppedSenderPrefix   = "stopped ";
 
 function logDo(description)   { console.log("Perform: " + description); }
 function logUndo(description) { console.log("Undo: " + description); }
@@ -65,11 +66,23 @@ function messageReceivedActionConfiguration() {
       confirmedId = unconfirmedMessagesOfId.shift();
     incomplete  = false;
   } else {
-    sender = {
-      id:    unknownSenderPrefix+generateRandomId(),
-      label: "unknown sender"
-    };
-    description = logData.time() + ": Received message to: " + receiver.id;
+    var logData3 = state.timeline().filter(containsSender).
+                                    filter(containsMessage).
+                                    filter(sameMessageId)[0];
+    if (logData3 != null) {
+      var stoppedSender = logData3.createNode();
+      sender = {
+        id:    stoppedSenderPrefix+stoppedSender.id,
+        label: stoppedSenderPrefix+stoppedSender.label
+      };
+      description = logData.time() + ": Received message to: " + receiver.id;
+    } else {
+      sender = {
+        id:    unknownSenderPrefix+generateRandomId(),
+        label: "unknown sender"
+      };
+      description = logData.time() + ": Received message to: " + receiver.id;
+    }
     confirmedId = { inner: generateRandomId(), outer: messageId };
     incomplete  = true;
   }
@@ -129,8 +142,6 @@ function messageReceivedActionConfiguration() {
       state.removeEdge({ id: confirmedId.inner });
       state.removeNode(sender);
     });
-
-    return;
   } else {
     // regular case
 
