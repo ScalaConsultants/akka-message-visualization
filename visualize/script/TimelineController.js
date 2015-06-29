@@ -40,11 +40,17 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
     var created = logData.createNode();
     var label = "Actor: "+created.id;
     var group = groups.length;
-    groups.push({ id: group, content: label });
+    groups.push({ id: group, content: label, title: label });
 
     function isPair(logData2) { return logData2.containsStopped() && logData2.createNode().id === created.id; }
     var pair = rawTimeline.filter(isPair)[0];
-    return { content: created.id, group: group, start: logData.time(), end: ((pair != null) ? pair : noEnd).time() };
+    return {
+      content: created.id,
+      group:   group,
+      title:   label,
+      start:   logData.time(),
+      end:     ((pair != null) ? pair : noEnd).time()
+    };
   }
   var actorsWithCreationAndMaybeStopping = rawTimeline.map(actorWithCreationAndMaybeStopping).filter(utils.notNull);
 
@@ -61,8 +67,14 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
     if (pair != null)
       return null;
 
-    groups.push({ id: group, content: label });
-    return { content: stopped.id, group: group, start: noStart.time(), end: logData.time() };
+    groups.push({ id: group, content: label, title: label });
+    return {
+      content: stopped.id,
+      group:   group,
+      title:   label,
+      start:   noStart.time(),
+      end:     logData.time()
+    };
   }
   var actorsWithStoppingOnly = rawTimeline.map(actorWithStoppingOnly).filter(utils.notNull);
 
@@ -84,8 +96,15 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
     } else {
       label = "Msg: "+logData.createMessageLabel()+"<br/>  from "+sender;
     }
-    groups.push({ id: group, content: label });
-    return { content: content, group: group, start: logData.time(), end: ((pair != null) ? pair : noEnd).time() };
+    var title = label.replace(new RegExp('<br/>', 'g'), '');
+    groups.push({ id: group, content: label, title: title });
+    return {
+      content: content,
+      group:   group,
+      title:   title,
+      start:   logData.time(),
+      end:     ((pair != null) ? pair : noEnd).time()
+    };
   }
   var messagesWithDepartureAndMaybeArrival = rawTimeline.map(messageWithDepartureAndMaybeArrival).filter(utils.notNull);
 
@@ -102,9 +121,16 @@ TimelineController.prototype._initiateTimeline = function(jsonArray, timelineSta
     if (pair != null)
       return null;
 
-    var label    = "Msg: "+logData.createMessageLabel()+"<br/>  to "+receiver;
-    groups.push({ id: group, content: label });
-    return { content: logData.createMessageLabel(), group: group, start: noStart.time(), end: logData.time() };
+    var label = "Msg: "+logData.createMessageLabel()+"<br/>  to "+receiver;
+    var title = label.replace(new RegExp('<br/>', 'g'), '');
+    groups.push({ id: group, content: label, title: title });
+    return {
+      content: logData.createMessageLabel(),
+      group:   group,
+      title:   title,
+      start:   noStart.time(),
+      end:     logData.time()
+    };
   }
   var messagesWithArrivalOnly = rawTimeline.map(messageWithArrivalOnly).filter(utils.notNull);
 
