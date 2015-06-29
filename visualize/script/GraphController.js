@@ -14,17 +14,19 @@ function GraphController(config, fetcher) {
   this._state   = null;
 }
 
-GraphController.prototype.timeline     = function() { return (this._state != null) ? this._state.timeline() : null; }
+GraphController.prototype.timeline      = function() { return (this._state != null) ? this._state.timeline() : null; }
 
-GraphController.prototype.startAnew    = function(graphStartedCallback) {
+GraphController.prototype.startAnew     = function(graphStartedCallback) {
   if (this._state != null)
     this._state.destroy();
   this._startGraph(graphStartedCallback);
 }
 
-GraphController.prototype.canForward   = function() { return this._state != null && this._state.canForward(); }
-GraphController.prototype.canBackward  = function() { return this._state != null && this._state.canBackward(); }
-GraphController.prototype.moveForward  = function(forwardedCallback) {
+GraphController.prototype.canForward    = function() { return this._state != null && this._state.canForward(); }
+GraphController.prototype.canBackward   = function() { return this._state != null && this._state.canBackward(); }
+GraphController.prototype.hasAsForward  = function(logData) { return this._state.hasAsForward(logData); }
+GraphController.prototype.hasAsBackward = function(logData) { return this._state.hasAsBackward(logData); }
+GraphController.prototype.moveForward   = function(forwardedCallback) {
   if (this.canForward()) {
     var previous = this._state.getBackward();
     this._state.moveForward();
@@ -33,7 +35,7 @@ GraphController.prototype.moveForward  = function(forwardedCallback) {
       forwardedCallback(this, current, previous);
   }
 }
-GraphController.prototype.moveBackward = function(backwardedCallback) {
+GraphController.prototype.moveBackward  = function(backwardedCallback) {
   if (this.canBackward()) {
     var previous = this._state.getBackward();
     this._state.moveBackward();

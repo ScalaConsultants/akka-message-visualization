@@ -46,13 +46,20 @@ VisualizationController.prototype._onGraphStartedAnew = function(graphController
   console.log("Loading graph's log into navigation");
   this._config.getGraphLogElement().empty();
 
+  var that     = this;
   var timeline = graphController.timeline();
+  var rewinds  = [];
   for (var index in timeline) {
-    var id    = this._logToId(timeline[index]);
-    var value = JSON.stringify(timeline[index].json());
-    var child = '<' + this._config.getLogTag() + ' id="' + id + '">' + value + '</' + this._config.getLogTag() + '>';
+    var logData = timeline[index];
+    var id      = this._logToId(logData);
+    var value   = JSON.stringify(logData.json());
+    var child   = '<' + this._config.getLogTag() + ' id="' + id + '">' + value + '</' + this._config.getLogTag() + '>';
     this._config.getGraphLogElement().append(child);
+    rewinds.push({ id: id, data: logData });
   }
+  rewinds.forEach(function(id_data) {
+    $('#'+id_data.id).click(function() { that._onRewindTo(graphController, id_data.data); });
+  })
 
   this._updateInterface(graphController);
 }
@@ -78,6 +85,15 @@ VisualizationController.prototype._onMoved = function(graphController, currentPo
   }
 
   this._updateInterface(graphController);
+}
+
+VisualizationController.prototype._onRewindTo = function(graphController, logData) {
+  if (graphController.hasAsForward(logData))
+    while (graphController.canForward() && graphController.hasAsForward(logData))
+      this.moveForward();
+  else if (graphController.hasAsBackward(logData))
+    while (graphController.canBackward() && graphController.hasAsBackward(logData))
+      this.moveBackward();
 }
 
 VisualizationController.prototype._updateInterface = function(graphController) {

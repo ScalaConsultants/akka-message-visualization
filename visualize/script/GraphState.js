@@ -61,6 +61,10 @@ GraphState.prototype.dequeForward   = function() { return this._forwardQueue.pop
 GraphState.prototype.getForward     = function() {
   return this.canForward() ? this._forwardQueue[this._forwardQueue.length - 1] : null;
 }
+GraphState.prototype.hasAsForward   = function(logData) {
+  function toJSON(action) { return action.logData().json(); }
+  return this._forwardQueue.map(toJSON).indexOf(logData.json()) >= 0;
+}
 GraphState.prototype.moveForward    = function() {
   if (this.canForward()) {
     var action = this.dequeForward();
@@ -75,11 +79,14 @@ GraphState.prototype.enqueBackward  = function(action) { this._backwardQueue.pus
 GraphState.prototype.getBackward    = function() {
   return this.canBackward() ? this._backwardQueue[this._backwardQueue.length - 1] : null;
 }
+GraphState.prototype.hasAsBackward  = function(logData) {
+  function toJSON(action) { return action.logData().json(); }
+  return this._backwardQueue.map(toJSON).indexOf(logData.json()) >= 0;
+}
 GraphState.prototype.moveBackward   = function() {
   if (this.canBackward()) {
     var action = this.dequeBackward();
     action.actBackward();
-  // TODO: handle received without send event
     this.enqueForward(action);
   }
 }
