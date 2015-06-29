@@ -203,7 +203,7 @@ be aware of that limitation.
 
 Timeline simply shows duration of either an actor's life or a message's transfer duration. Usually it is very short for
 messages and much longer for actors. However, if beginning of an interval starts at timeline's beginning (earliest
-event) or timline's end (latest event) it means that complete knowledge wasn't available within logs:
+event) or timeline's end (latest event) it means that complete knowledge wasn't available within logs:
 
  * actors with lifespan span starting in the beginning were either created as first actors within the system or were
    assumed to live at the beginning of the recorded time frame. Similarly actors which intervals reach the end either
@@ -245,3 +245,13 @@ a partial functions. `MessagingLogger` ignores wrapper and records message and u
 Those limitations mean that the project which would decide on using visualization would have to introduce a lot of
 boilerplate code and additional conventions. Depending on usefulness of the tool we might consider request Akka authors
 for API which would allow us to avoid changes all over the project.
+
+## Possible improvements
+
+Timeline graph could not only show messaging time but also responding - by logging both start of message request and
+the end of it, it would be possible to see directly which responses failed and where they took too long. Graph animation
+could show parent-child relationship between nodes as well as reason for an actor's death: Poison Pill, crash, shutdown.
+Whole representation could also be modified to not only replay already finished recording but also respond to log's data
+incoming online. Graph visualization could also offer different strategies with handling corner cases: e.g. not
+displaying messages from not observed nodes instead of showing *unknown senders*. Such strategies could be set up basing
+on packages and types.
