@@ -183,11 +183,13 @@ highlighted on raw JSON log on the right. Meaning of each animation:
       will disappear once it reach the new addressee,
     * receiver wasn't correctly configured,
 
- * appearance of *unknown receiver* node indicates that message was sent by node that isn't on a list of known alive
+ * appearance of *unknown sender* node indicates that message was sent by node that isn't on a list of known alive
    nodes - this can happen when:
    
     * sender was stopped before message arrived,
-    * sender wasn't correctly configured.
+    * sender wasn't correctly configured,
+    
+ * short appearance of *stopped [actor]* node indicates that message was sent from actor that died some time before. 
 
 Events occurring in the same millisecond will be displayed on the following order:
  
