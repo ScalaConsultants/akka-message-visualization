@@ -255,3 +255,5 @@ Whole representation could also be modified to not only replay already finished 
 incoming online. Graph visualization could also offer different strategies with handling corner cases: e.g. not
 displaying messages from not observed nodes instead of showing *unknown senders*. Such strategies could be set up basing
 on packages and types.
+
+Developed by [Scalac](https://scalac.io/?utm_source=scalac_github&utm_campaign=scalac1&utm_medium=web)
